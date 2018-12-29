@@ -7,7 +7,7 @@ import TransportLayer from '../lib/transport-layer';
 import LoadingSpinner, { LoadingProps } from './loading-spinner';
 
 export interface RestViewProps<T> {
-  data: T[];
+  data: T[]; // TODO: figure out how to configure this key
   post: (payload: Partial<T>) => Promise<T>;
 }
 
