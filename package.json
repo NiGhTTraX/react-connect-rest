@@ -2,13 +2,21 @@
   "name": "react-rest-connect",
   "description": "A React container app that connects a view to a REST endpoint",
   "version": "0.0.1",
+  "main": "dist/src/index",
+  "types": "dist/src/index",
+  "files": [
+    "./dist/src"
+  ],
   "scripts": {
+    "build": "npm run clean && npm run compile",
+    "clean": "rm -rf ./dist",
+    "compile": "tsc --declaration --outDir ./dist",
+    "prepublishOnly": "npm run build",
     "start": "./start.sh",
     "frontend": "webpack-dev-server --config webpack.config.dev.js",
     "backend": "docker-compose up --build backend",
     "_backend": "ts-node src/server.ts",
     "playground": "cosmos --config playground/cosmos.config.js",
-    "build": "npm run clean && npm run compile",
     "lint": "eslint --ext ts,tsx,js .",
     "test": "./tests/run.sh",
     "test:node": "TS_NODE_CACHE=0 mocha --opts tests/node/mocha.opts",
