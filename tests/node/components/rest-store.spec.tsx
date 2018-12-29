@@ -36,6 +36,8 @@ describe('RestStore', () => {
 
       await wait(() => expect(Loading.rendered).to.be.true);
 
+      expect(Foo.rendered).to.be.false;
+
       transportLayer.verifyAll();
     });
   });
