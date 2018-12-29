@@ -1,6 +1,6 @@
 import React, { Component, ComponentType } from 'react';
 // eslint-disable-next-line no-unused-vars
-import RestStore, { RestViewProps } from './rest-store';
+import RestStore, { RestViewProps } from './components/rest-store';
 
 export default function connectToRest<T, ViewProps>(
   View: ComponentType<ViewProps & RestViewProps<T>>, api: string

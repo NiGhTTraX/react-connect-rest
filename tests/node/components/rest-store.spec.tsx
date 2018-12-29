@@ -1,8 +1,8 @@
 import React from 'react';
 import { describe, it, $render, expect, wait } from '../suite';
-import RestStore, { RestViewProps } from '../../../src/rest-store';
+import RestStore, { RestViewProps } from '../../../src/components/rest-store';
 import { createReactStub } from 'react-mock-component';
-import TransportLayer from '../../../src/transport-layer';
+import TransportLayer from '../../../src/lib/transport-layer';
 import { Mock } from 'typemoq';
 
 interface Foo {

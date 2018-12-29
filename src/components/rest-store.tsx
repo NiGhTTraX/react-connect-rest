@@ -1,8 +1,8 @@
 /* eslint-disable react/no-multi-comp,max-len */
 import React, { Component, ComponentType } from 'react';
 // eslint-disable-next-line no-unused-vars
-import FetchTransport from './fetch-transport';
-import TransportLayer from './transport-layer';
+import FetchTransport from '../lib/fetch-transport';
+import TransportLayer from '../lib/transport-layer';
 // eslint-disable-next-line no-unused-vars
 import LoadingSpinner, { LoadingProps } from './loading-spinner';
 

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { RestViewProps } from '../../src/rest-store';
+import { RestViewProps } from '../../src/components/rest-store';
 import connectToRest from '../../src/connect';
 
 interface CategoryModel {
