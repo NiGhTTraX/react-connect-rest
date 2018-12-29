@@ -1,0 +1,9 @@
+version: '2.1'
+
+services:
+  playground:
+    build: ./
+    command: npm run playground
+    volumes:
+      - ./src/:/usr/src/app/src:ro
+      - ./playground:/usr/src/app/playground:ro
