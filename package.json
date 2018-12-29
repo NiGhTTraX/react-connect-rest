@@ -2,15 +2,15 @@
   "name": "react-rest-connect",
   "description": "A React container app that connects a view to a REST endpoint",
   "version": "0.0.1",
-  "main": "dist/src/index",
-  "types": "dist/src/index",
+  "main": "dist/index",
+  "types": "dist/index",
   "files": [
-    "./dist/src"
+    "./dist"
   ],
   "scripts": {
     "build": "npm run clean && npm run compile",
     "clean": "rm -rf ./dist",
-    "compile": "tsc --declaration --outDir ./dist",
+    "compile": "tsc --project tsconfig.build.json --declaration --outDir ./dist",
     "prepublishOnly": "npm run build",
     "playground": "cosmos --config playground/cosmos.config.js",
     "lint": "eslint --ext ts,tsx,js .",
