@@ -4,15 +4,19 @@ import RestStore, { RestViewProps } from './components/rest-store';
 import getCollectionNameFromApi from './lib/path-to-name';
 
 export default function connectToRest<T, ViewProps>(
-  View: ComponentType<ViewProps & RestViewProps<T>>, api: string
+  View: ComponentType<ViewProps & RestViewProps<T>>, api: string,
+  {
+    collectionNameFromApi: getDisplayNameFromApi = getCollectionNameFromApi,
+    StateWrapper = RestStore
+  }
 ) {
   return class ConnectedView extends Component<ViewProps> {
-    static displayName = `connect(${View.displayName || View.name}, ${getCollectionNameFromApi(api)})`;
+    static displayName = `connect(${View.displayName || View.name}, ${getDisplayNameFromApi(api)})`;
 
     render() {
       const { props: viewProps } = this;
 
-      return <RestStore viewProps={viewProps} View={View} api={api} />;
+      return <StateWrapper viewProps={viewProps} View={View} api={api} />;
     }
   };
 }
