@@ -11,12 +11,13 @@ export type connectToRestOptions<T, ViewProps> = {
 };
 
 export default function connectToRest<T, ViewProps>(
-  View: ComponentType<ViewProps & RestViewProps<T>>, api: string,
+  View: ComponentType<ViewProps & RestViewProps<T>>,
+  api: string,
   {
     getDisplayNameFromApi = getCollectionNameFromApi,
     StateWrapper = RestStore
   }: connectToRestOptions<T, ViewProps>
-) {
+): ComponentType<ViewProps> {
   return class ConnectedView extends Component<ViewProps> {
     static displayName = `connect(${View.displayName || View.name}, ${getDisplayNameFromApi(api)})`;
 
