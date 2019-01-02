@@ -19,7 +19,7 @@
     "lint": "eslint --ext ts,tsx,js .",
     "test": "./tests/run.sh",
     "test:node": "TS_NODE_CACHE=0 mocha --opts tests/node/mocha.opts",
-    "test:node:coverage": "COVERAGE=1 nyc mocha --opts tests/node/mocha.coverage.opts",
+    "test:node:coverage": "TS_NODE_CACHE=0 COVERAGE=1 nyc mocha --opts tests/node/mocha.coverage.opts",
     "report-coverage": "nyc report --reporter=json && codecov -f tests/results/coverage/coverage-final.json"
   },
   "husky": {
