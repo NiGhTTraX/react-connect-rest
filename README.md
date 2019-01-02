@@ -51,6 +51,7 @@ type connectToRestOptions<T, ViewProps> = {
    * This is used to create a pretty display name for the HOC.
    * By default it gets the collection name from a RESTful
    * URL e.g. /api/v1/post/ => 'post'.
+   */
   getDisplayNameFromApi: (url: string) => string;
 
   /**
