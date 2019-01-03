@@ -1,7 +1,7 @@
 {
   "name": "react-rest-connect",
   "description": "A React container app that connects a view to a REST endpoint",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "main": "dist/index",
   "types": "dist/index",
   "repository": {
@@ -79,7 +79,7 @@
     "sinon-chai": "~3.3.0",
     "ts-node": "~7.0.1",
     "typemoq": "~2.1.0",
-    "typescript": "~3.1.6",
+    "typescript": "~3.2.2",
     "typescript-eslint-parser": "~20.1.1"
   }
 }

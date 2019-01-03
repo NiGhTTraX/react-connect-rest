@@ -33,7 +33,7 @@ export default class RestStore<T, ViewProps> extends Component<RestStoreProps<T,
   state = { loading: true, response: [] };
 
   render() {
-    const { View, LoadingComponent } = this.props;
+    const { View, LoadingComponent, viewProps } = this.props;
     const { loading, response } = this.state;
 
     if (loading) {
@@ -41,7 +41,7 @@ export default class RestStore<T, ViewProps> extends Component<RestStoreProps<T,
       return <LoadingComponent />;
     }
 
-    return <View {...this.props} data={response} post={this.post} />;
+    return <View {...viewProps} data={response} post={this.post} />;
   }
 
   async componentWillMount() {

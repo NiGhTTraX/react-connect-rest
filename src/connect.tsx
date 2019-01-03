@@ -28,6 +28,7 @@ export default function connectToRest<T, ViewProps>(
     render() {
       const { props: viewProps } = this;
 
+      // @ts-ignore
       return <StateWrapper viewProps={viewProps} View={View} api={api} />;
     }
   };
