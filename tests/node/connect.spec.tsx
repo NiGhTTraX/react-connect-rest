@@ -1,12 +1,15 @@
 /* eslint-disable no-shadow */
 import React from 'react';
-import { describe, it, $render, expect } from './suite';
+import { describe, it, afterEach, $render, expect } from './suite';
 import { RestStoreProps, RestViewProps } from '../../src/components/rest-store';
 import { createReactStub } from 'react-mock-component';
 import { Mock } from 'typemoq';
 import connectToRest, { getDisplayNameFromApi } from '../../src/connect';
+import fetchMock from 'fetch-mock';
 
 describe('connectToRest', () => {
+  afterEach(() => { fetchMock.reset(); });
+
   it('should wrap the view in the state wrapper', () => {
     interface ViewProps {
       foo: string;
@@ -45,6 +48,18 @@ describe('connectToRest', () => {
       getDisplayNameFromApi: getDisplayNameStub.object,
       StateWrapper
     });
+
+    $render(<ConnectedComponent />);
+
+    expect(ConnectedComponent.displayName).to.contain('collection');
+  });
+
+  it('should have sane defaults', () => {
+    const View = createReactStub<RestViewProps<any>>();
+
+    fetchMock.get('/some/api/collection/', []);
+
+    const ConnectedComponent = connectToRest<any, {}>(View, '/some/api/collection/');
 
     $render(<ConnectedComponent />);
 

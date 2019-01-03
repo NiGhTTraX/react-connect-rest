@@ -6,18 +6,22 @@ import getCollectionNameFromApi from './lib/path-to-name';
 export type getDisplayNameFromApi = (url: string) => string;
 
 export type connectToRestOptions<T, ViewProps> = {
-  getDisplayNameFromApi: getDisplayNameFromApi;
-  StateWrapper: ComponentType<RestStoreProps<T, ViewProps>>;
+  getDisplayNameFromApi?: getDisplayNameFromApi;
+  StateWrapper?: ComponentType<RestStoreProps<T, ViewProps>>;
 };
 
+type DataViewProps<T, ViewProps = {}> = ViewProps & RestViewProps<T>;
+
 export default function connectToRest<T, ViewProps>(
-  View: ComponentType<ViewProps & RestViewProps<T>>,
+  View: ComponentType<DataViewProps<T, ViewProps>>,
   api: string,
-  {
+  options: connectToRestOptions<T, ViewProps> = {}
+): ComponentType<ViewProps> {
+  const {
     getDisplayNameFromApi = getCollectionNameFromApi,
     StateWrapper = RestStore
-  }: connectToRestOptions<T, ViewProps>
-): ComponentType<ViewProps> {
+  } = options;
+
   return class ConnectedView extends Component<ViewProps> {
     static displayName = `connect(${View.displayName || View.name}, ${getDisplayNameFromApi(api)})`;
 

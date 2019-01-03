@@ -1,9 +1,11 @@
 import { JSDOM } from 'jsdom';
+import fetch from 'node-fetch';
 
 declare global {
   namespace NodeJS {
     interface Global {
       window: any;
+      fetch: any;
       document: any;
       navigator: any;
       requestAnimationFrame: any;
@@ -15,6 +17,7 @@ declare global {
 
 // React needs these.
 global.window = new JSDOM('').window;
+global.fetch = fetch;
 global.document = global.window.document;
 global.navigator = {
   userAgent: 'node.js'
