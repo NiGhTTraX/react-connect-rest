@@ -13,9 +13,7 @@ describe('RestStore', () => {
 
     const store = new RestStore2(transportLayer.object, ':api:');
 
-    // @ts-ignore TODO: fix in container
     expect(store.state.loading).to.be.true;
-    // @ts-ignore
     expect(store.state.response).to.be.empty;
 
     transportLayer.verifyAll();
@@ -33,13 +31,8 @@ describe('RestStore', () => {
 
     return new Promise(resolve => {
       store.addListener(() => {
-        // @ts-ignore TODO: fix in container
         expect(store.state.loading).to.be.false;
-        // @ts-ignore
-        expect(store.state.response)
-          .to
-          .deep
-          .equal(response);
+        expect(store.state.response).to.deep.equal(response);
 
         transportLayer.verifyAll();
         resolve();
@@ -68,9 +61,7 @@ describe('RestStore', () => {
 
     await store.post({ foo: 'bar' });
 
-    // @ts-ignore TODO: fix in container
     expect(store.state.loading).to.be.false;
-    // @ts-ignore
     expect(store.state.response).to.deep.equal([response]);
 
     transportLayer.verifyAll();

@@ -34,7 +34,7 @@
   "author": "Andrei Picus",
   "license": "MIT",
   "dependencies": {
-    "react-state-connect": "~1.0.2"
+    "react-state-connect": "~1.0.3"
   },
   "peerDependencies": {
     "react": "^16"
