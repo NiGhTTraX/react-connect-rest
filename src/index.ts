@@ -1,7 +1,6 @@
 import connectToRest from './connect';
-import RestStore, { RestViewProps } from './components/rest-store';
-import LoadingSpinner from './components/loading-spinner';
+import RestStore from './components/rest-store';
 
 export default connectToRest;
 
-export { RestStore, LoadingSpinner, RestViewProps };
+export { RestStore };
