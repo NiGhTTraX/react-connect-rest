@@ -12,6 +12,6 @@ describe('RestStoreMock', () => {
     const response = [{ foo: 'bar' }];
     const mock = new RestStoreMock<{ foo: string }>(response);
 
-    await wait(() => expect(mock.state).to.deep.equal({ loading: false, response: [{ foo: 'bar' }] }));
+    await wait(() => expect(mock.state).to.deep.equal({ loading: false, response }));
   });
 });
