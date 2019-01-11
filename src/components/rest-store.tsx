@@ -1,12 +1,25 @@
 import { StateContainer } from 'react-state-connect';
 import TransportLayer from '../lib/transport-layer';
 
-export interface RestState2<T> {
+export interface RestState<T> {
   loading: boolean;
+
+  /**
+   * The endpoint is assumed to return a collection of entities.
+   */
   response: T[]
 }
 
-export default class RestStore<T> extends StateContainer<RestState2<T>> {
+export interface IRestStore<T> {
+  state: RestState<T>;
+
+  /**
+   * Create a new entity via a POST request.
+   */
+  post: (payload: Partial<T>) => void; // TODO: return T
+}
+
+export default class RestStore<T> extends StateContainer<RestState<T>> implements IRestStore<T> {
   constructor(private transportLayer: TransportLayer, private api: string) {
     super();
 
