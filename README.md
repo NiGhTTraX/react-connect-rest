@@ -1,4 +1,4 @@
-> Connect your React views to REST endpoints in a type safe way
+> Opinionated and type safe way of connecting React views to REST endpoints
 
 [![Build Status](https://travis-ci.com/NiGhTTraX/react-rest-connect.svg?branch=master)](https://travis-ci.com/NiGhTTraX/react-rest-connect)
 [![codecov](https://codecov.io/gh/NiGhTTraX/react-rest-connect/branch/master/graph/badge.svg)](https://codecov.io/gh/NiGhTTraX/react-rest-connect)
