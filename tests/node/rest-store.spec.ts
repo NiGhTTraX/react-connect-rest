@@ -1,6 +1,6 @@
 import { describe, it, expect } from './suite';
 import { Mock } from 'typemoq';
-import RestStore from '../../src/components/rest-store';
+import RestStore from '../../src/lib/rest-store';
 import TransportLayer from '../../src/lib/transport-layer';
 
 describe('RestStore', () => {

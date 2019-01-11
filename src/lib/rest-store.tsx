@@ -1,6 +1,6 @@
 import { StateContainer } from 'react-state-connect';
-import TransportLayer from '../lib/transport-layer';
-import FetchTransport from '../lib/fetch-transport';
+import TransportLayer from './transport-layer';
+import FetchTransport from './fetch-transport';
 
 export interface RestState<T> {
   loading: boolean;

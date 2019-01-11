@@ -4,7 +4,7 @@ import fetchMock from 'fetch-mock';
 import { Mock } from 'typemoq';
 import { describe, it, afterEach, expect, wait, $render } from './suite';
 import connectToRest from '../../src/connect';
-import RestStore from '../../src/components/rest-store';
+import RestStore from '../../src/lib/rest-store';
 
 describe('connectToRest', () => {
   afterEach(() => {

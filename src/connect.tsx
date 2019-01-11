@@ -1,6 +1,6 @@
 import { ComponentType } from 'react';
 import connectToState from 'react-state-connect';
-import RestStore from './components/rest-store';
+import RestStore from './lib/rest-store';
 import { Omit } from 'react-bind-component';
 import FetchTransport from './lib/fetch-transport';
 

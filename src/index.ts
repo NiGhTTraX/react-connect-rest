@@ -1,5 +1,5 @@
 import connectToRest from './connect';
-import RestStore from './components/rest-store';
+import RestStore from './lib/rest-store';
 
 export default connectToRest;
 
