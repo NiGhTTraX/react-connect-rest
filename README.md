@@ -21,7 +21,11 @@ const MyView = ({ myData, foo }: MyViewProps) => <div>
   </p>}
 </div>;
 
-const ConnectedView = connectToRest(MyView, '/my/api/', 'myData');
+// All 3 types need to be specified until
+// https://github.com/Microsoft/TypeScript/issues/10571 is implemented.
+const ConnectedView = connectToRest<MyViewProps, number, 'myData'>(
+  MyView, '/my/api/', 'myData'
+);
 
 ReactDOM.render(<ConnectedView />);
 ```
