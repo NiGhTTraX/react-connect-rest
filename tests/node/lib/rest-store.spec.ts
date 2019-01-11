@@ -1,7 +1,7 @@
-import { describe, it, expect } from './suite';
+import { describe, it, expect } from '../suite';
 import { Mock } from 'typemoq';
-import RestStore from '../../src/lib/rest-store';
-import TransportLayer from '../../src/lib/transport-layer';
+import RestStore from '../../../src/lib/rest-store';
+import TransportLayer from '../../../src/lib/transport-layer';
 
 describe('RestStore', () => {
   it('should make a request when created', () => {
