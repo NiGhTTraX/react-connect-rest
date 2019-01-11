@@ -51,3 +51,18 @@ ReactDOM.render(<div>
   <ConnectedView2 />
 </div>);
 ```
+
+
+## Testing
+
+You can create stores with mocked data for use in tests:
+
+```tsx
+import { RestStoreMock } from 'react-rest-connect';
+
+const mock = new RestStoreMock<number>([1, 2, 3]);
+
+// in the next tick
+mock.state.loading === false
+mock.state.response[0] === 1
+```
