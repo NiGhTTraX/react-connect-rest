@@ -11,7 +11,7 @@ describe('RestStore', () => {
       .returns(() => new Promise(() => {}))
       .verifiable();
 
-    const store = new RestStore(transportLayer.object, ':api:');
+    const store = new RestStore(':api:', transportLayer.object);
 
     expect(store.state.loading).to.be.true;
     expect(store.state.response).to.be.empty;
@@ -27,7 +27,7 @@ describe('RestStore', () => {
       .returns(() => Promise.resolve(response))
       .verifiable();
 
-    const store = new RestStore(transportLayer.object, ':api:');
+    const store = new RestStore(':api:', transportLayer.object);
 
     return new Promise(resolve => {
       store.addListener(() => {
@@ -46,7 +46,7 @@ describe('RestStore', () => {
       .setup(x => x.get(':api:'))
       .returns(() => Promise.resolve([]));
 
-    const store = new RestStore(transportLayer.object, ':api:');
+    const store = new RestStore(':api:', transportLayer.object);
 
     const response = { id: 1, foo: 'bar' };
 

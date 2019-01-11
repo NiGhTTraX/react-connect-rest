@@ -43,7 +43,7 @@ export default function connectToRest<
   prop: K
 ): ComponentType<Omit<ViewProps, K>> {
   if (typeof containerOrApi === 'string') {
-    return connectToState(View, new RestStore(FetchTransport, containerOrApi), prop);
+    return connectToState(View, new RestStore(containerOrApi, FetchTransport), prop);
   }
 
   return connectToState(View, containerOrApi, prop);

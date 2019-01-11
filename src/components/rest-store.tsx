@@ -1,5 +1,6 @@
 import { StateContainer } from 'react-state-connect';
 import TransportLayer from '../lib/transport-layer';
+import FetchTransport from '../lib/fetch-transport';
 
 export interface RestState<T> {
   loading: boolean;
@@ -20,7 +21,7 @@ export interface IRestStore<T> {
 }
 
 export default class RestStore<T> extends StateContainer<RestState<T>> implements IRestStore<T> {
-  constructor(private transportLayer: TransportLayer, private api: string) {
+  constructor(private api: string, private transportLayer: TransportLayer = FetchTransport) {
     super();
 
     this.state = {
