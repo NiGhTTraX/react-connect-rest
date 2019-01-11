@@ -21,8 +21,15 @@ export interface IRestStore<T> {
 }
 
 export default class RestStore<T> extends StateContainer<RestState<T>> implements IRestStore<T> {
-  constructor(private api: string, private transportLayer: TransportLayer = FetchTransport) {
+  private readonly api: string;
+
+  private readonly transportLayer: TransportLayer = FetchTransport;
+
+  constructor(api: string, transportLayer: TransportLayer = FetchTransport) {
     super();
+
+    this.transportLayer = transportLayer;
+    this.api = api;
 
     this.state = {
       loading: true,
