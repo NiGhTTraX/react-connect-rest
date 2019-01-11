@@ -14,14 +14,14 @@ interface MyViewProps {
   container: IRestStore<number>;
 }
 
-const MyView = ({ container, foo }: MyViewProps) => <div>
-  {container.state.loading ? 'Loading...' : <p>
+const MyView = ({ myData, foo }: MyViewProps) => <div>
+  {myData.state.loading ? 'Loading...' : <p>
     Here is the data from the API:
-    {JSON.stringify(container.state.response)}
+    {JSON.stringify(myData.state.response)}
   </p>}
 </div>;
 
-const ConnectedView = connectToRest(MyView, '/my/api/');
+const ConnectedView = connectToRest(MyView, '/my/api/', 'myData');
 
 ReactDOM.render(<ConnectedView />);
 ```
@@ -43,8 +43,8 @@ const MyView2 = ({ container, foo }: MyViewProps) => null;
 
 // We'll have a single container querying the API and multiple
 // views listening to it.
-const ConnectedView1 = connectToRest(MyView, container);
-const ConnectedView2 = connectToRest(MyView, container);
+const ConnectedView1 = connectToRest(MyView, container, 'container');
+const ConnectedView2 = connectToRest(MyView, container, 'container');
 
 ReactDOM.render(<div>
   <ConnectedView1 />
