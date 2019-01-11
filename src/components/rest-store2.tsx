@@ -1,12 +1,12 @@
 import { StateContainer } from 'react-state-connect';
 import TransportLayer from '../lib/transport-layer';
 
-interface RestState<T> {
+export interface RestState2<T> {
   loading: boolean;
   response: T[]
 }
 
-export default class RestStore2<T> extends StateContainer<RestState<T>> {
+export default class RestStore2<T> extends StateContainer<RestState2<T>> {
   constructor(private transportLayer: TransportLayer, private api: string) {
     super();
 

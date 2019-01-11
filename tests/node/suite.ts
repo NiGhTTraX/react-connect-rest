@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { ReactElement } from 'react';
 import chai, { expect } from 'chai';
 import sinonChai from 'sinon-chai';
-import { waitForElement } from 'dom-testing-library';
+import { wait as w2 } from 'dom-testing-library';
 import {
   runnerAfterEach,
   runnerBeforeEach,
@@ -22,8 +22,7 @@ function getJQueryContainer(): JQuery {
 }
 
 export function wait(cb: ($container: JQuery) => boolean | Chai.Assertion) {
-  return waitForElement(() => cb(getJQueryContainer()), {
-    container: componentContainer,
+  return w2(() => cb(getJQueryContainer()), {
     timeout: 1500
   });
 }
