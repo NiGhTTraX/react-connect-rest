@@ -11,7 +11,7 @@ export interface RestState<T> {
   response: T[]
 }
 
-export interface IRestStore<T> {
+export interface IRestStore<T> extends StateContainer<RestState<T>> {
   state: RestState<T>;
 
   /**

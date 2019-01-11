@@ -1,11 +1,11 @@
 import { ComponentType } from 'react';
 import connectToState from 'react-state-connect';
-import RestStore from './lib/rest-store';
+import RestStore, { IRestStore } from './lib/rest-store';
 import { Omit } from 'react-bind-component';
 import FetchTransport from './lib/fetch-transport';
 
 export function connectToRest<
-  ViewProps extends Record<K, RestStore<T>>,
+  ViewProps extends Record<K, IRestStore<T>>,
   T,
   K extends string
 >(
@@ -16,12 +16,12 @@ export function connectToRest<
 
 
 export function connectToRest<
-  ViewProps extends Record<K, RestStore<T>>,
+  ViewProps extends Record<K, IRestStore<T>>,
   T,
   K extends string
 >(
   View: ComponentType<ViewProps>,
-  container: RestStore<T>,
+  container: IRestStore<T>,
   prop: K
 ): ComponentType<Omit<ViewProps, K>>;
 
@@ -34,12 +34,12 @@ export function connectToRest<
  * @param prop
  */
 export default function connectToRest<
-  ViewProps extends Record<K, RestStore<T>>,
+  ViewProps extends Record<K, IRestStore<T>>,
   T,
   K extends string
 >(
   View: ComponentType<ViewProps>,
-  containerOrApi: RestStore<T> | string,
+  containerOrApi: IRestStore<T> | string,
   prop: K
 ): ComponentType<Omit<ViewProps, K>> {
   if (typeof containerOrApi === 'string') {
