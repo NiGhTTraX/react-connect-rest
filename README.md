@@ -66,7 +66,6 @@ import { RestStoreMock } from 'react-rest-connect';
 
 const mock = new RestStoreMock<number>([1, 2, 3]);
 
-// in the next tick
 mock.state.loading === false
 mock.state.response[0] === 1
 ```

@@ -51,16 +51,9 @@ export default class RestStore<T> extends StateContainer<RestState<T>> implement
 }
 
 export class RestStoreMock<T> extends StateContainer<RestState<T>> implements IRestStore<T> {
-  private readonly mock: T[] | undefined;
-
   constructor(mock?: T[]) {
     super();
-    this.mock = mock;
-    this.state = { loading: true, response: [] };
-
-    if (mock) {
-      setTimeout(() => this.setState({ loading: false, response: mock }), 0);
-    }
+    this.state = mock ? { loading: false, response: mock } : { loading: true, response: [] };
   }
 
   post = (payload: Partial<T>) => {

@@ -1,4 +1,4 @@
-import { describe, it, expect, wait } from '../suite';
+import { describe, it, expect } from '../suite';
 import { RestStoreMock } from '../../../src/lib/rest-store';
 
 describe('RestStoreMock', () => {
@@ -8,10 +8,10 @@ describe('RestStoreMock', () => {
     expect(mock.state).to.deep.equal({ loading: true, response: [] });
   });
 
-  it('should fetch the mocked state', async () => {
+  it('should set the mocked state', () => {
     const response = [{ foo: 'bar' }];
     const mock = new RestStoreMock<{ foo: string }>(response);
 
-    await wait(() => expect(mock.state).to.deep.equal({ loading: false, response }));
+    expect(mock.state).to.deep.equal({ loading: false, response });
   });
 });
