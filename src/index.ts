@@ -1,6 +1,6 @@
 import connectToRest from './connect';
-import RestStore, { IRestStore } from './lib/rest-store';
+import RestStore, { IRestStore, RestStoreMock } from './lib/rest-store';
 
 export default connectToRest;
 
-export { RestStore, IRestStore };
+export { RestStore, IRestStore, RestStoreMock };
