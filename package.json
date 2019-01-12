@@ -1,7 +1,7 @@
 {
   "name": "react-rest-connect",
   "description": "A React container app that connects a view to a REST endpoint",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "main": "dist/index",
   "types": "dist/index",
   "repository": {
