@@ -8,8 +8,7 @@ module.exports = {
   ],
 
   'extends': [
-    '@nighttrax/eslint-config',
-    '@nighttrax/eslint-config/react',
+    '@nighttrax/eslint-config/tsx'
   ],
 
   'rules': {
