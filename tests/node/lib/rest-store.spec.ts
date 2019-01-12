@@ -76,10 +76,11 @@ describe('RestStore', () => {
       .setup(x => x.get(':api:'))
       .returns(() => Promise.resolve([response]));
 
-    await store.post({ foo: 'bar' });
+    const reply = await store.post({ foo: 'bar' });
 
     expect(store.state.loading).to.be.false;
     expect(store.state.response).to.deep.equal([response]);
+    expect(reply).to.deep.equal(response);
 
     transportLayer.verifyAll();
   });

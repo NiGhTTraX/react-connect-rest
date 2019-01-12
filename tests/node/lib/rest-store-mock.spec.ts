@@ -15,11 +15,13 @@ describe('RestStoreMock', () => {
     expect(mock.state).to.deep.equal({ loading: false, response });
   });
 
-  it('should spy on POST requests', () => {
+  it('should spy on POST requests', async () => {
     const mock = new RestStoreMock<{ id: number; foo: string }>();
+    mock.post.withArgs({ foo: 'bar' }).returns({ id: 1, foo: 'bar' });
 
-    mock.post({ foo: 'bar' });
+    const response = await mock.post({ foo: 'bar' });
 
     expect(mock.post).to.have.been.calledWith({ foo: 'bar' });
+    expect(response).to.deep.equal({ id: 1, foo: 'bar' });
   });
 });
