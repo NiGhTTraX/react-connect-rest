@@ -1,5 +1,5 @@
 import { describe, it, expect } from '../suite';
-import { RestStoreMock } from '../../../src/lib/rest-store';
+import { RestStoreMock } from '../../../src';
 
 describe('RestStoreMock', () => {
   it('should have an initial state', () => {
@@ -13,5 +13,13 @@ describe('RestStoreMock', () => {
     const mock = new RestStoreMock<{ foo: string }>(response);
 
     expect(mock.state).to.deep.equal({ loading: false, response });
+  });
+
+  it('should spy on POST requests', () => {
+    const mock = new RestStoreMock<{ id: number; foo: string }>();
+
+    mock.post({ foo: 'bar' });
+
+    expect(mock.post).to.have.been.calledWith({ foo: 'bar' });
   });
 });

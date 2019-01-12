@@ -1,6 +1,8 @@
 import { StateContainer } from 'react-state-connect';
 import TransportLayer from './transport-layer';
 import FetchTransport from './fetch-transport';
+// eslint-disable-next-line no-unused-vars
+import { stub } from 'sinon';
 
 export interface RestState<T> {
   loading: boolean;
@@ -47,16 +49,15 @@ export default class RestStore<T> extends StateContainer<RestState<T>> implement
     await this.transportLayer.post<T>(this.api, payload);
 
     return this.transportLayer.get<T[]>(this.api).then(this.onFetchData);
-  }
+  };
 }
 
 export class RestStoreMock<T> extends StateContainer<RestState<T>> implements IRestStore<T> {
   constructor(mock?: T[]) {
     super();
+
     this.state = mock ? { loading: false, response: mock } : { loading: true, response: [] };
   }
 
-  post = (payload: Partial<T>) => {
-    // TODO: set up a mock here
-  }
+  post = stub() as (payload: Partial<T>) => void;
 }
