@@ -43,7 +43,7 @@ export default class RestStore<T> extends StateContainer<RestState<T>> implement
       response: []
     };
 
-    transportLayer.get<T[]>(api).then(this.onFetchData);
+    this.fetchData();
   }
 
   private onFetchData = (response: T[]) => {
@@ -53,15 +53,19 @@ export default class RestStore<T> extends StateContainer<RestState<T>> implement
   post = async (payload: Partial<T>) => {
     const response = await this.transportLayer.post<T>(this.api, payload);
 
-    await this.transportLayer.get<T[]>(this.api).then(this.onFetchData);
+    await this.fetchData();
 
     return response;
   };
 
+  private fetchData() {
+    return this.transportLayer.get<T[]>(this.api).then(this.onFetchData);
+  }
+
   patch = async (payload: Partial<T>) => {
     const response = await this.transportLayer.patch<T>(this.api, payload);
 
-    await this.transportLayer.get<T[]>(this.api).then(this.onFetchData);
+    await this.fetchData();
 
     return response;
   }
