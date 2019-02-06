@@ -26,4 +26,22 @@ describe('FetchTransport', () => {
 
     expect(await FetchTransport.post<T>('/api/', { foo: 'bar' })).to.deep.equal(response);
   });
+
+  it('should make a PATCH request', async () => {
+    const response = { id: 1, foo: 'bar' };
+    type T = { id: number, foo: string };
+
+    fetchMock.patch(
+      (url, opts) => url === '/api/' && opts.body === JSON.stringify({ foo: 'bar' }),
+      response,
+      {
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+
+    expect(await FetchTransport.patch<T>('/api/', { foo: 'bar' })).to.deep.equal(response);
+  });
 });

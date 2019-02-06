@@ -16,6 +16,18 @@ const FetchTransport: TransportLayer = {
       body: JSON.stringify(body)
     // @ts-ignore
     }).then(resp => resp.json() as T);
+  },
+
+  patch<T>(path: string, body: Partial<T>): Promise<T> {
+    return fetch(path, {
+      method: 'PATCH',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
+      // @ts-ignore
+    }).then(resp => resp.json() as T);
   }
 };
 
