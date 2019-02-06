@@ -24,4 +24,14 @@ describe('RestStoreMock', () => {
     expect(mock.post).to.have.been.calledWith({ foo: 'bar' });
     expect(response).to.deep.equal({ id: 1, foo: 'bar' });
   });
+
+  it('should spy on PATCH requests', async () => {
+    const mock = new RestStoreMock<{ id: number; foo: string }>();
+    mock.patch.withArgs({ foo: 'bar' }).returns({ id: 1, foo: 'bar' });
+
+    const response = await mock.patch({ foo: 'bar' });
+
+    expect(mock.patch).to.have.been.calledWith({ foo: 'bar' });
+    expect(response).to.deep.equal({ id: 1, foo: 'bar' });
+  });
 });

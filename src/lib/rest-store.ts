@@ -20,6 +20,11 @@ export interface IRestStore<T> extends StateContainer<RestState<T>> {
    * Create a new entity via a POST request.
    */
   post: (payload: Partial<T>) => Promise<T>;
+
+  /**
+   * Update an existing entity via a POST request.
+   */
+  patch: (payload: Partial<T>) => Promise<T>;
 }
 
 export default class RestStore<T> extends StateContainer<RestState<T>> implements IRestStore<T> {
@@ -52,6 +57,14 @@ export default class RestStore<T> extends StateContainer<RestState<T>> implement
 
     return response;
   };
+
+  patch = async (payload: Partial<T>) => {
+    const response = await this.transportLayer.patch<T>(this.api, payload);
+
+    await this.transportLayer.get<T[]>(this.api).then(this.onFetchData);
+
+    return response;
+  }
 }
 
 export class RestStoreMock<T> extends StateContainer<RestState<T>> implements IRestStore<T> {
@@ -67,5 +80,13 @@ export class RestStoreMock<T> extends StateContainer<RestState<T>> implements IR
     withArgs: (payload: Partial<T>) => {
       returns: (response: T) => void;
     }
-  }
+  };
+
+  patch = stub() as {
+    (payload: Partial<T>): Promise<T>;
+
+    withArgs: (payload: Partial<T>) => {
+      returns: (response: T) => void;
+    }
+  };
 }
