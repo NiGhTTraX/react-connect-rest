@@ -7,28 +7,23 @@ const FetchTransport: TransportLayer = {
   },
 
   post<T>(path: string, body: Partial<T>) {
-    return fetch(path, {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(body)
-    // @ts-ignore
-    }).then(resp => resp.json() as T);
+    return doFetchWithBody(path, body, 'POST');
   },
 
   patch<T>(path: string, body: Partial<T>): Promise<T> {
-    return fetch(path, {
-      method: 'PATCH',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(body)
-      // @ts-ignore
-    }).then(resp => resp.json() as T);
+    return doFetchWithBody(path, body, 'PATCH');
   }
 };
+
+function doFetchWithBody<T>(path: string, body: Partial<T>, method: string) {
+  return fetch(path, {
+    method,
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(body)
+  }).then(resp => resp.json() as unknown as T);
+}
 
 export default FetchTransport;
