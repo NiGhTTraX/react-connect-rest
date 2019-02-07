@@ -33,7 +33,7 @@ export interface IRestStore<T extends { id: any }> extends StateContainer<RestSt
 export default class RestStore<T extends { id: any }> extends StateContainer<RestState<T>> implements IRestStore<T> {
   private readonly api: string;
 
-  private readonly transportLayer: TransportLayer = FetchTransport;
+  private readonly transportLayer: TransportLayer;
 
   constructor(api: string, transportLayer: TransportLayer = FetchTransport) {
     super();
@@ -49,12 +49,16 @@ export default class RestStore<T extends { id: any }> extends StateContainer<Res
     this.fetchData();
   }
 
-  private onFetchData = (response: T[]) => {
-    this.setState({ loading: false, response });
-  };
-
   post = async (payload: Omit<T, 'id'>) => {
     const response = await this.transportLayer.post<T>(this.api, payload as Partial<T>);
+
+    await this.fetchData();
+
+    return response;
+  };
+
+  patch = async (payload: PatchPayload<T>) => {
+    const response = await this.transportLayer.patch<T>(this.api, payload as Partial<T>);
 
     await this.fetchData();
 
@@ -65,11 +69,7 @@ export default class RestStore<T extends { id: any }> extends StateContainer<Res
     return this.transportLayer.get<T[]>(this.api).then(this.onFetchData);
   }
 
-  patch = async (payload: PatchPayload<T>) => {
-    const response = await this.transportLayer.patch<T>(this.api, payload as Partial<T>);
-
-    await this.fetchData();
-
-    return response;
+  private onFetchData = (response: T[]) => {
+    this.setState({ loading: false, response });
   };
 }
