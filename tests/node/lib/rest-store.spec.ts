@@ -1,11 +1,10 @@
 import { describe, it, expect } from '../suite';
 import { Mock } from 'typemoq';
-import fetchMock from 'fetch-mock';
 import RestStore from '../../../src/lib/rest-store';
 import TransportLayer from '../../../src/lib/transport-layer';
 
 describe('RestStore', () => {
-  it('should make a request when created', () => {
+  it('should make a GET request when created', () => {
     const transportLayer = Mock.ofType<TransportLayer>();
     transportLayer
       .setup(x => x.get(':api:'))
@@ -20,7 +19,7 @@ describe('RestStore', () => {
     transportLayer.verifyAll();
   });
 
-  it('should store the response', () => {
+  it('should store the GET response', () => {
     const response = [{ id: 1 }, { id: 2 }];
     const transportLayer = Mock.ofType<TransportLayer>();
     transportLayer
@@ -36,22 +35,6 @@ describe('RestStore', () => {
         expect(store.state.response).to.deep.equal(response);
 
         transportLayer.verifyAll();
-        resolve();
-      });
-    });
-  });
-
-  it('should have a default transport layer', () => {
-    const response = [{ id: 1 }, { id: 2 }];
-    fetchMock.get(':api:', response);
-
-    const store = new RestStore(':api:');
-
-    return new Promise(resolve => {
-      store.addListener(() => {
-        expect(store.state.loading).to.be.false;
-        expect(store.state.response).to.deep.equal(response);
-
         resolve();
       });
     });
