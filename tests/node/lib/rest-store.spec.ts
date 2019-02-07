@@ -63,7 +63,7 @@ describe('RestStore', () => {
       .setup(x => x.get(':api:'))
       .returns(() => Promise.resolve([]));
 
-    const store = new RestStore(':api:', transportLayer.object);
+    const store = new RestStore<{ id: number, foo: string }>(':api:', transportLayer.object);
 
     const response = { id: 1, foo: 'bar' };
 
@@ -91,12 +91,12 @@ describe('RestStore', () => {
       .setup(x => x.get(':api:'))
       .returns(() => Promise.resolve([]));
 
-    const store = new RestStore(':api:', transportLayer.object);
+    const store = new RestStore<{ id: number, foo: string }>(':api:', transportLayer.object);
 
     const response = { id: 1, foo: 'baz' };
 
     transportLayer
-      .setup(x => x.patch(':api:', { foo: 'baz' }))
+      .setup(x => x.patch(':api:', { id: 1, foo: 'baz' }))
       .returns(() => Promise.resolve(response))
       .verifiable();
 
@@ -104,7 +104,7 @@ describe('RestStore', () => {
       .setup(x => x.get(':api:'))
       .returns(() => Promise.resolve([response]));
 
-    const reply = await store.patch({ foo: 'baz' });
+    const reply = await store.patch({ id: 1, foo: 'baz' });
 
     expect(store.state.loading).to.be.false;
     expect(store.state.response).to.deep.equal([response]);

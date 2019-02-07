@@ -9,8 +9,8 @@ describe('RestStoreMock', () => {
   });
 
   it('should set the mocked state', () => {
-    const response = [{ foo: 'bar' }];
-    const mock = new RestStoreMock<{ foo: string }>(response);
+    const response = [{ id: 1, foo: 'bar' }];
+    const mock = new RestStoreMock<{ id: number, foo: string }>(response);
 
     expect(mock.state).to.deep.equal({ loading: false, response });
   });
@@ -27,11 +27,11 @@ describe('RestStoreMock', () => {
 
   it('should spy on PATCH requests', async () => {
     const mock = new RestStoreMock<{ id: number; foo: string }>();
-    mock.patch.withArgs({ foo: 'bar' }).returns({ id: 1, foo: 'bar' });
+    mock.patch.withArgs({ id: 1, foo: 'bar' }).returns({ id: 1, foo: 'bar' });
 
-    const response = await mock.patch({ foo: 'bar' });
+    const response = await mock.patch({ id: 1, foo: 'bar' });
 
-    expect(mock.patch).to.have.been.calledWith({ foo: 'bar' });
+    expect(mock.patch).to.have.been.calledWith({ id: 1, foo: 'bar' });
     expect(response).to.deep.equal({ id: 1, foo: 'bar' });
   });
 });

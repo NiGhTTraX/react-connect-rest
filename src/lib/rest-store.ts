@@ -1,8 +1,9 @@
 import { StateContainer } from 'react-state-connect';
 import TransportLayer from './transport-layer';
 import FetchTransport from './fetch-transport';
-// eslint-disable-next-line no-unused-vars
 import { stub } from 'sinon';
+// eslint-disable-next-line no-unused-vars
+import { Omit } from 'react-bind-component';
 
 export interface RestState<T> {
   loading: boolean;
@@ -13,21 +14,24 @@ export interface RestState<T> {
   response: T[]
 }
 
-export interface IRestStore<T> extends StateContainer<RestState<T>> {
+type PatchPayload<T extends { id: any }> = Pick<T, 'id'> & Partial<Omit<T, 'id'>>;
+
+export interface IRestStore<T extends { id: any }> extends StateContainer<RestState<T>> {
   state: RestState<T>;
 
   /**
    * Create a new entity via a POST request.
    */
-  post: (payload: Partial<T>) => Promise<T>;
+  post: (payload: Omit<T, 'id'>) => Promise<T>;
 
   /**
    * Update an existing entity via a POST request.
    */
-  patch: (payload: Partial<T>) => Promise<T>;
+  patch: (payload: PatchPayload<T>) => Promise<T>;
 }
 
-export default class RestStore<T> extends StateContainer<RestState<T>> implements IRestStore<T> {
+// eslint-disable-next-line max-len
+export default class RestStore<T extends { id: any }> extends StateContainer<RestState<T>> implements IRestStore<T> {
   private readonly api: string;
 
   private readonly transportLayer: TransportLayer = FetchTransport;
@@ -50,8 +54,8 @@ export default class RestStore<T> extends StateContainer<RestState<T>> implement
     this.setState({ loading: false, response });
   };
 
-  post = async (payload: Partial<T>) => {
-    const response = await this.transportLayer.post<T>(this.api, payload);
+  post = async (payload: Omit<T, 'id'>) => {
+    const response = await this.transportLayer.post<T>(this.api, payload as Partial<T>);
 
     await this.fetchData();
 
@@ -62,16 +66,17 @@ export default class RestStore<T> extends StateContainer<RestState<T>> implement
     return this.transportLayer.get<T[]>(this.api).then(this.onFetchData);
   }
 
-  patch = async (payload: Partial<T>) => {
-    const response = await this.transportLayer.patch<T>(this.api, payload);
+  patch = async (payload: PatchPayload<T>) => {
+    const response = await this.transportLayer.patch<T>(this.api, payload as Partial<T>);
 
     await this.fetchData();
 
     return response;
-  }
+  };
 }
 
-export class RestStoreMock<T> extends StateContainer<RestState<T>> implements IRestStore<T> {
+// eslint-disable-next-line max-len
+export class RestStoreMock<T extends { id: any }> extends StateContainer<RestState<T>> implements IRestStore<T> {
   constructor(mock?: T[]) {
     super();
 
@@ -79,17 +84,17 @@ export class RestStoreMock<T> extends StateContainer<RestState<T>> implements IR
   }
 
   post = stub() as {
-    (payload: Partial<T>): Promise<T>;
+    (payload: Omit<T, 'id'>): Promise<T>;
 
-    withArgs: (payload: Partial<T>) => {
+    withArgs: (payload: Omit<T, 'id'>) => {
       returns: (response: T) => void;
     }
   };
 
   patch = stub() as {
-    (payload: Partial<T>): Promise<T>;
+    (payload: PatchPayload<T>): Promise<T>;
 
-    withArgs: (payload: Partial<T>) => {
+    withArgs: (payload: PatchPayload<T>) => {
       returns: (response: T) => void;
     }
   };

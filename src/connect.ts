@@ -6,7 +6,7 @@ import FetchTransport from './lib/fetch-transport';
 
 export function connectToRest<
   ViewProps extends Record<K, IRestStore<T>>,
-  T,
+  T extends { id: any },
   K extends string
 >(
   View: ComponentType<ViewProps>,
@@ -17,7 +17,7 @@ export function connectToRest<
 
 export function connectToRest<
   ViewProps extends Record<K, IRestStore<T>>,
-  T,
+  T extends { id: any },
   K extends string
 >(
   View: ComponentType<ViewProps>,
@@ -35,7 +35,7 @@ export function connectToRest<
  */
 export default function connectToRest<
   ViewProps extends Record<K, IRestStore<T>>,
-  T,
+  T extends { id: any },
   K extends string
 >(
   View: ComponentType<ViewProps>,
