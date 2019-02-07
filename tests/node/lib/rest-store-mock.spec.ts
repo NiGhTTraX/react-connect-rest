@@ -1,5 +1,5 @@
-import { describe, it, expect } from '../suite';
-import { RestStoreMock } from '../../../src';
+import { describe, expect, it } from '../suite';
+import RestStoreMock from '../../../src/lib/rest-store-mock';
 
 describe('RestStoreMock', () => {
   it('should have an initial state', () => {
