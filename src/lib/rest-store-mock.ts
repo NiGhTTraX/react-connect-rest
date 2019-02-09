@@ -18,9 +18,9 @@ export default class RestStoreMock<T extends { id: any }> extends StateContainer
   }
 
   post = stub() as {
-    (payload: Omit<T, 'id'>): Promise<T>;
+    (payload: Partial<Omit<T, 'id'>>): Promise<T>;
 
-    withArgs: (payload: Omit<T, 'id'>) => {
+    withArgs: (payload: Partial<Omit<T, 'id'>>) => {
       returns: (response: T) => void;
     }
   };

@@ -21,7 +21,7 @@ export interface IRestStore<T extends { id: any }> extends StateContainer<RestSt
   /**
    * Create a new entity via a POST request.
    */
-  post: (payload: Omit<T, 'id'>) => Promise<T>;
+  post: (payload: Partial<Omit<T, 'id'>>) => Promise<T>;
 
   /**
    * Update an existing entity via a POST request.
@@ -49,7 +49,7 @@ export default class RestStore<T extends { id: any }> extends StateContainer<Res
     this.fetchData();
   }
 
-  post = async (payload: Omit<T, 'id'>) => {
+  post = async (payload: Partial<Omit<T, 'id'>>) => {
     const response = await this.transportLayer.post<T>(this.api, payload as Partial<T>);
 
     await this.fetchData();
