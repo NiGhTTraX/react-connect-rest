@@ -31,9 +31,9 @@ export interface IRestStore<T extends { id: any }> extends StateContainer<RestSt
 
 // eslint-disable-next-line max-len
 export default class RestStore<T extends { id: any }> extends StateContainer<RestState<T>> implements IRestStore<T> {
-  private readonly api: string;
+  protected readonly api: string;
 
-  private readonly transportLayer: TransportLayer;
+  protected readonly transportLayer: TransportLayer;
 
   constructor(api: string, transportLayer: TransportLayer = FetchTransport) {
     super();
