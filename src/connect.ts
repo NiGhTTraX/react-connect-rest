@@ -4,21 +4,24 @@ import RestStore, { IRestStore } from './lib/rest-store';
 import { Omit } from 'react-bind-component';
 import FetchTransport from './lib/fetch-transport';
 
+type PropsThatAllowContainers<ViewProps, T extends { id: any }> = {
+  [P in keyof ViewProps]: ViewProps[P] extends IRestStore<T> ? P : never;
+}[keyof ViewProps];
+
 export function connectToRest<
-  ViewProps extends Record<K, IRestStore<T>>,
+  ViewProps,
   T extends { id: any },
-  K extends string
+  K extends PropsThatAllowContainers<ViewProps, T>
 >(
   View: ComponentType<ViewProps>,
   api: string,
   prop: K
 ): ComponentType<Omit<ViewProps, K>>;
 
-
 export function connectToRest<
-  ViewProps extends Record<K, IRestStore<T>>,
+  ViewProps,
   T extends { id: any },
-  K extends string
+  K extends PropsThatAllowContainers<ViewProps, T>
 >(
   View: ComponentType<ViewProps>,
   container: IRestStore<T>,
@@ -34,9 +37,9 @@ export function connectToRest<
  * @param prop
  */
 export default function connectToRest<
-  ViewProps extends Record<K, IRestStore<T>>,
+  ViewProps,
   T extends { id: any },
-  K extends string
+  K extends PropsThatAllowContainers<ViewProps, T>
 >(
   View: ComponentType<ViewProps>,
   containerOrApi: IRestStore<T> | string,
