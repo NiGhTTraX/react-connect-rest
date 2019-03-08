@@ -1,7 +1,7 @@
 import { ComponentType } from 'react';
 import connectToState from 'react-connect-state';
-import RestStore, { IRestStore } from './lib/rest-store';
 import { Omit } from 'react-bind-component';
+import RestStore, { IRestStore } from './lib/rest-store';
 import FetchTransport from './lib/fetch-transport';
 
 type RestEntity = {
