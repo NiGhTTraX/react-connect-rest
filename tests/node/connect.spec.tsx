@@ -1,5 +1,5 @@
 import React from 'react';
-import { createReactStub } from 'react-mock-component';
+import createReactMock from 'react-mock-component';
 import fetchMock from 'fetch-mock';
 import { Mock } from 'typemoq';
 import { describe, it, afterEach, expect, wait, $render } from './suite';
@@ -18,7 +18,7 @@ describe('connectToRest', () => {
     interface ViewProps {
       container: RestStore<any>
     }
-    const View = createReactStub<ViewProps>();
+    const View = createReactMock<ViewProps>();
     const ConnectedView = connectToRest(View, '/api/', 'container');
 
     $render(<ConnectedView />);
@@ -37,7 +37,7 @@ describe('connectToRest', () => {
       // eslint-disable-next-line no-use-before-define
       container: RestStore<any>
     }
-    const View = createReactStub<ViewProps>();
+    const View = createReactMock<ViewProps>();
     const container = Mock.ofType<RestStore<any>>();
     const ConnectedView = connectToRest(View, container.object, 'container');
 
