@@ -1,8 +1,7 @@
 import { StateContainer } from 'react-connect-state';
+import { Omit } from 'react-bind-component';
 import TransportLayer from './transport-layer';
 import FetchTransport from './fetch-transport';
-// eslint-disable-next-line no-unused-vars
-import { Omit } from 'react-bind-component';
 
 export interface RestState<T> {
   loading: boolean;
