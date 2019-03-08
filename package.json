@@ -1,5 +1,5 @@
 {
-  "name": "react-rest-connect",
+  "name": "react-connect-rest",
   "description": "Type safe way of connecting React components to REST endpoints",
   "keywords": [
     "react",

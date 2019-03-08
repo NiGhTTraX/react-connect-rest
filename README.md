@@ -2,15 +2,15 @@
 to a REST endpoint might look like. Heavily opinionated and not production
 ready, this is an _**experimental project**_.
 
-[![Build Status](https://travis-ci.com/NiGhTTraX/react-rest-connect.svg?branch=master)](https://travis-ci.com/NiGhTTraX/react-rest-connect)
-[![codecov](https://codecov.io/gh/NiGhTTraX/react-rest-connect/branch/master/graph/badge.svg)](https://codecov.io/gh/NiGhTTraX/react-rest-connect)
+[![Build Status](https://travis-ci.com/NiGhTTraX/react-connect-rest.svg?branch=master)](https://travis-ci.com/NiGhTTraX/react-connect-rest)
+[![codecov](https://codecov.io/gh/NiGhTTraX/react-connect-rest/branch/master/graph/badge.svg)](https://codecov.io/gh/NiGhTTraX/react-connect-rest)
 
 ----
 
 ## Usage
 
 ```tsx
-import connectToRest, { IRestStore } from 'react-rest-connect';
+import connectToRest, { IRestStore } from 'react-connect-rest';
 
 interface MyViewProps {
   container: IRestStore<number>;
@@ -44,7 +44,7 @@ looks like and how the data it returns looks like.
 ## Connecting multiple views to the same API
 
 ```tsx
-import connectToRest, { RestStore, IRestStore } from 'react-rest-connect';
+import connectToRest, { RestStore, IRestStore } from 'react-connect-rest';
 
 const container = new RestStore<number>('/my/api/');
 
@@ -72,7 +72,7 @@ ReactDOM.render(<div>
 You can create stores with mocked data for use in tests:
 
 ```tsx
-import { RestStoreMock } from 'react-rest-connect';
+import { RestStoreMock } from 'react-connect-rest';
 
 const mock = new RestStoreMock<number>([1, 2, 3]);
 
