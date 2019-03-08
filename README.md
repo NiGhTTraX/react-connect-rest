@@ -36,7 +36,7 @@ ReactDOM.render(<ConnectedView />);
 ## Assumptions
 
 As mentioned, this lib has opinions about how a REST endpoint
-looks like and how the data it returns looks like.
+and how the data it returns looks:
 
 1. All entities can be uniquely identifiable by an `id` key.
 
