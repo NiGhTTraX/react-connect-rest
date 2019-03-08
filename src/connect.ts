@@ -4,13 +4,17 @@ import RestStore, { IRestStore } from './lib/rest-store';
 import { Omit } from 'react-bind-component';
 import FetchTransport from './lib/fetch-transport';
 
-type PropsThatAllowContainers<ViewProps, T extends { id: any }> = {
+type RestEntity = {
+  id: any;
+};
+
+type PropsThatAllowContainers<ViewProps, T extends RestEntity> = {
   [P in keyof ViewProps]: ViewProps[P] extends IRestStore<T> ? P : never;
 }[keyof ViewProps];
 
 export function connectToRest<
   ViewProps,
-  T extends { id: any },
+  T extends RestEntity,
   K extends PropsThatAllowContainers<ViewProps, T>
 >(
   View: ComponentType<ViewProps>,
@@ -20,7 +24,7 @@ export function connectToRest<
 
 export function connectToRest<
   ViewProps,
-  T extends { id: any },
+  T extends RestEntity,
   K extends PropsThatAllowContainers<ViewProps, T>
 >(
   View: ComponentType<ViewProps>,
@@ -38,7 +42,7 @@ export function connectToRest<
  */
 export default function connectToRest<
   ViewProps,
-  T extends { id: any },
+  T extends RestEntity,
   K extends PropsThatAllowContainers<ViewProps, T>
 >(
   View: ComponentType<ViewProps>,
