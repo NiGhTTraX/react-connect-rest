@@ -42,7 +42,7 @@
   "author": "Andrei Picus",
   "license": "MIT",
   "dependencies": {
-    "react-state-connect": "~1.0.3",
+    "react-connect-state": "~3.1.1",
     "sinon": "~7.2.0"
   },
   "peerDependencies": {

@@ -1,4 +1,4 @@
-import { StateContainer } from 'react-state-connect';
+import { StateContainer } from 'react-connect-state';
 import { stub } from 'sinon';
 import { Omit } from 'react-bind-component';
 import { IRestStore, PatchPayload, RestState } from './rest-store';

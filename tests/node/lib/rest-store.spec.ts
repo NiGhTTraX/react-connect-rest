@@ -31,7 +31,7 @@ describe('RestStore', () => {
     const store = new RestStore(':api:', transportLayer.object);
 
     return new Promise(resolve => {
-      store.addListener(() => {
+      store.subscribe(() => {
         expect(store.state.loading).to.be.false;
         expect(store.state.response).to.deep.equal(response);
 
@@ -48,7 +48,7 @@ describe('RestStore', () => {
     const store = new RestStore(':api:');
 
     return new Promise(resolve => {
-      store.addListener(() => {
+      store.subscribe(() => {
         expect(store.state.loading).to.be.false;
         expect(store.state.response).to.deep.equal(response);
 

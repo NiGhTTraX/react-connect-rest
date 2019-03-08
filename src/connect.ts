@@ -1,5 +1,5 @@
 import { ComponentType } from 'react';
-import connectToState from 'react-state-connect';
+import connectToState from 'react-connect-state';
 import RestStore, { IRestStore } from './lib/rest-store';
 import { Omit } from 'react-bind-component';
 import FetchTransport from './lib/fetch-transport';
@@ -43,8 +43,14 @@ export default function connectToRest<
   prop: K
 ): ComponentType<Omit<ViewProps, K>> {
   if (typeof containerOrApi === 'string') {
-    return connectToState(View, new RestStore(containerOrApi, FetchTransport), prop);
+    // @ts-ignore
+    return connectToState(View, {
+      [prop]: new RestStore(containerOrApi, FetchTransport)
+    });
   }
 
-  return connectToState(View, containerOrApi, prop);
+  // @ts-ignore
+  return connectToState(View, {
+    [prop]: containerOrApi
+  });
 }

@@ -1,4 +1,4 @@
-import { StateContainer } from 'react-state-connect';
+import { StateContainer } from 'react-connect-state';
 import TransportLayer from './transport-layer';
 import FetchTransport from './fetch-transport';
 // eslint-disable-next-line no-unused-vars
