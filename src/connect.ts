@@ -1,5 +1,5 @@
 import { ComponentType } from 'react';
-import connectToState from 'react-connect-state';
+import connectToState, { PropsThatAllowContainers } from 'react-connect-state';
 import { Omit } from 'react-bind-component';
 import RestCollectionStore from './lib/rest-collection-store';
 import FetchTransport from './lib/fetch-transport';
@@ -9,14 +9,10 @@ type RestEntity = {
   id: any;
 };
 
-type PropsThatAllowContainers<ViewProps, T extends RestEntity> = {
-  [P in keyof ViewProps]: ViewProps[P] extends IRestCollectionStore<T> ? P : never;
-}[keyof ViewProps];
-
 export function connectToRest<
   ViewProps,
   T extends RestEntity,
-  K extends PropsThatAllowContainers<ViewProps, T>
+  K extends PropsThatAllowContainers<ViewProps, IRestCollectionStore<T>>
 >(
   View: ComponentType<ViewProps>,
   api: string,
@@ -26,7 +22,7 @@ export function connectToRest<
 export function connectToRest<
   ViewProps,
   T extends RestEntity,
-  K extends PropsThatAllowContainers<ViewProps, T>
+  K extends PropsThatAllowContainers<ViewProps, IRestCollectionStore<T>>
 >(
   View: ComponentType<ViewProps>,
   container: IRestCollectionStore<T>,
@@ -44,7 +40,7 @@ export function connectToRest<
 export default function connectToRest<
   ViewProps,
   T extends RestEntity,
-  K extends PropsThatAllowContainers<ViewProps, T>
+  K extends PropsThatAllowContainers<ViewProps, IRestCollectionStore<T>>
 >(
   View: ComponentType<ViewProps>,
   containerOrApi: IRestCollectionStore<T> | string,
