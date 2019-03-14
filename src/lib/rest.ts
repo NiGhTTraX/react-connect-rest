@@ -18,11 +18,6 @@ export interface IRestCollectionStore<T extends { id: any }> extends StateContai
    * Create a new entity via a POST request.
    */
   post: (payload: Partial<Omit<T, 'id'>>) => Promise<T>;
-
-  /**
-   * Update an existing entity via a PATCH request.
-   */
-  patch: (payload: CollectionPatchPayload<T>) => Promise<T>;
 }
 
 export interface RestEntityState<T> {

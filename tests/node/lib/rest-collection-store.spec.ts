@@ -84,32 +84,4 @@ describe('RestCollectionStore', () => {
 
     transportLayer.verifyAll();
   });
-
-  it('should make a PATCH request', async () => {
-    const transportLayer = Mock.ofType<TransportLayer>();
-    transportLayer
-      .setup(x => x.get(':api:'))
-      .returns(() => Promise.resolve([]));
-
-    const store = new RestCollectionStore<{ id: number, foo: string }>(':api:', transportLayer.object);
-
-    const response = { id: 1, foo: 'baz' };
-
-    transportLayer
-      .setup(x => x.patch(':api:', { id: 1, foo: 'baz' }))
-      .returns(() => Promise.resolve(response))
-      .verifiable();
-
-    transportLayer
-      .setup(x => x.get(':api:'))
-      .returns(() => Promise.resolve([response]));
-
-    const reply = await store.patch({ id: 1, foo: 'baz' });
-
-    expect(store.state.loading).to.be.false;
-    expect(store.state.response).to.deep.equal([response]);
-    expect(reply).to.deep.equal(response);
-
-    transportLayer.verifyAll();
-  });
 });

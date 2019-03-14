@@ -1,7 +1,7 @@
 import { Omit } from 'react-bind-component';
 import TransportLayer from './transport-layer';
 import FetchTransport from './fetch-transport';
-import { CollectionPatchPayload, IRestCollectionStore } from './rest';
+import { IRestCollectionStore } from './rest';
 import { RestStore } from './rest-store';
 
 /**
@@ -15,14 +15,6 @@ export default class RestCollectionStore<T extends { id: any }> extends RestStor
 
   post = async (payload: Partial<Omit<T, 'id'>>) => {
     const response = await this.transportLayer.post<T>(this.api, payload as Partial<T>);
-
-    await this.fetchData();
-
-    return response;
-  };
-
-  patch = async (payload: CollectionPatchPayload<T>) => {
-    const response = await this.transportLayer.patch<T>(this.api, payload as Partial<T>);
 
     await this.fetchData();
 
