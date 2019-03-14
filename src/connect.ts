@@ -2,7 +2,7 @@ import { ComponentType } from 'react';
 import connectToState, { PropsThatAllowContainers } from 'react-connect-state';
 import { Omit } from 'react-bind-component';
 import RestCollectionStore from './lib/rest-collection-store';
-import FetchTransport from './lib/fetch-transport';
+import FetchClient from './lib/fetch-client';
 import { IRestCollectionStore } from './lib/rest';
 
 type RestEntity = {
@@ -49,7 +49,7 @@ export default function connectToRest<
   if (typeof containerOrApi === 'string') {
     // @ts-ignore
     return connectToState(View, {
-      [prop]: new RestCollectionStore(containerOrApi, FetchTransport)
+      [prop]: new RestCollectionStore(containerOrApi, FetchClient)
     });
   }
 

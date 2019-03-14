@@ -2,11 +2,11 @@ import { describe, it, expect } from '../suite';
 import { Mock } from 'typemoq';
 import fetchMock from 'fetch-mock';
 import RestCollectionStore from '../../../src/lib/rest-collection-store';
-import TransportLayer from '../../../src/lib/transport-layer';
+import StorageClient from '../../../src/lib/storage-client';
 
 describe('RestCollectionStore', () => {
   it('should make a GET request when created', () => {
-    const transportLayer = Mock.ofType<TransportLayer>();
+    const transportLayer = Mock.ofType<StorageClient>();
     transportLayer
       .setup(x => x.get(':api:'))
       .returns(() => new Promise(() => {}))
@@ -22,7 +22,7 @@ describe('RestCollectionStore', () => {
 
   it('should store the GET response', () => {
     const response = [{ id: 1 }, { id: 2 }];
-    const transportLayer = Mock.ofType<TransportLayer>();
+    const transportLayer = Mock.ofType<StorageClient>();
     transportLayer
       .setup(x => x.get(':api:'))
       .returns(() => Promise.resolve(response))
@@ -58,7 +58,7 @@ describe('RestCollectionStore', () => {
   });
 
   it('should make a POST request', async () => {
-    const transportLayer = Mock.ofType<TransportLayer>();
+    const transportLayer = Mock.ofType<StorageClient>();
     transportLayer
       .setup(x => x.get(':api:'))
       .returns(() => Promise.resolve([]));
@@ -68,7 +68,7 @@ describe('RestCollectionStore', () => {
     const response = { id: 1, foo: 'bar' };
 
     transportLayer
-      .setup(x => x.post(':api:', { foo: 'bar' }))
+      .setup(x => x.set(':api:', { foo: 'bar' }))
       .returns(() => Promise.resolve(response))
       .verifiable();
 
@@ -86,7 +86,7 @@ describe('RestCollectionStore', () => {
   });
 
   it('should make a DELETE request', async () => {
-    const transportLayer = Mock.ofType<TransportLayer>();
+    const transportLayer = Mock.ofType<StorageClient>();
     transportLayer
       .setup(x => x.get(':api:'))
       .returns(() => Promise.resolve([{ id: 1, foo: 'bar' }]));

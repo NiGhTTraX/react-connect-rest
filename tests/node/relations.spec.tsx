@@ -4,7 +4,7 @@ import RelationalStore, {
   HATEOASRest,
   ManyToMany
 } from '../../src/lib/relational-store';
-import TransportLayer from '../../src/lib/transport-layer';
+import StorageClient from '../../src/lib/storage-client';
 
 describe('RelationalStore', () => {
   it('should leave primitives alone', async () => {
@@ -18,7 +18,7 @@ describe('RelationalStore', () => {
       data: [{ id: 1, title: 'item 1' }]
     };
 
-    const transportLayer = Mock.ofType<TransportLayer>();
+    const transportLayer = Mock.ofType<StorageClient>();
 
     transportLayer
       .setup(x => x.get(':post-api:'))
@@ -58,7 +58,7 @@ describe('RelationalStore', () => {
       }]
     };
 
-    const transportLayer = Mock.ofType<TransportLayer>();
+    const transportLayer = Mock.ofType<StorageClient>();
 
     transportLayer
       .setup(x => x.get(':collection-api:'))

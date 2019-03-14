@@ -1,6 +1,6 @@
 import { Omit } from 'react-bind-component';
-import TransportLayer from './transport-layer';
-import FetchTransport from './fetch-transport';
+import StorageClient from './storage-client';
+import FetchClient from './fetch-client';
 import { IRestCollectionStore } from './rest';
 import { RestStore } from './rest-store';
 
@@ -9,12 +9,12 @@ import { RestStore } from './rest-store';
  */
 // eslint-disable-next-line max-len
 export default class RestCollectionStore<T extends { id: any }> extends RestStore<T, T[]> implements IRestCollectionStore<T> {
-  constructor(api: string, transportLayer: TransportLayer = FetchTransport) {
+  constructor(api: string, transportLayer: StorageClient = FetchClient) {
     super(api, [], transportLayer);
   }
 
   post = async (payload: Partial<Omit<T, 'id'>>) => {
-    const response = await this.transportLayer.post<T>(this.api, payload as Partial<T>);
+    const response = await this.transportLayer.set<T>(this.api, payload as Partial<T>);
 
     await this.fetchData();
 

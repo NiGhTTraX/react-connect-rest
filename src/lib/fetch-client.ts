@@ -1,16 +1,16 @@
-import TransportLayer from './transport-layer';
+import StorageClient from './storage-client';
 
-const FetchTransport: TransportLayer = {
+const FetchClient: StorageClient = {
   get<T>(path: string) {
     // @ts-ignore
     return fetch(path).then(resp => resp.json() as T);
   },
 
-  post<T>(path: string, body: Partial<T>) {
+  set<T>(path: string, body: Partial<T>) {
     return doFetchWithBody(path, body, 'POST');
   },
 
-  patch<T>(path: string, body: Partial<T>): Promise<T> {
+  update<T>(path: string, body: Partial<T>): Promise<T> {
     return doFetchWithBody(path, body, 'PATCH');
   },
 
@@ -30,4 +30,4 @@ function doFetchWithBody<T>(path: string, body: Partial<T>, method: string) {
   }).then(resp => resp.json() as unknown as T);
 }
 
-export default FetchTransport;
+export default FetchClient;

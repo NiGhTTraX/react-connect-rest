@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { IRestCollectionStore } from './rest';
 import { StateContainer } from 'react-connect-state';
-import TransportLayer from './transport-layer';
+import StorageClient from './storage-client';
 import RestCollectionStore from './rest-collection-store';
 
 export type ManyToMany<T extends { id: any }> = T['id'][] & { __fk?: 'm2m' };
@@ -46,11 +46,11 @@ type RelationalCollectionStoreState<T extends { id: any }> = {
 
 // eslint-disable-next-line max-len
 export default class RelationalStore<T extends { id: any }> extends StateContainer<RelationalCollectionStoreState<T>> {
-  private readonly transportLayer: TransportLayer;
+  private readonly transportLayer: StorageClient;
 
   private readonly api: string;
 
-  constructor(api: string, transportLayer: TransportLayer) {
+  constructor(api: string, transportLayer: StorageClient) {
     super();
     this.api = api;
     this.transportLayer = transportLayer;
