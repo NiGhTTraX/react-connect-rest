@@ -1,4 +1,4 @@
-import { IStateContainer } from 'react-connect-state';
+import { StateContainer } from 'react-connect-state';
 import { Omit } from 'react-bind-component';
 
 export interface RestCollectionState<T> {
@@ -7,9 +7,7 @@ export interface RestCollectionState<T> {
 }
 
 // eslint-disable-next-line max-len
-export interface IRestCollectionStore<T extends { id: any }> extends IStateContainer<RestCollectionState<T>> {
-  state: RestCollectionState<T>;
-
+export interface IRestCollectionStore<T extends { id: any }> extends StateContainer<RestCollectionState<T>> {
   /**
    * Create a new entity via a POST request.
    */
@@ -29,7 +27,7 @@ export interface RestEntityState<T> {
 export type EntityPatchPayload<T extends { id: any }> = Partial<Omit<T, 'id'>>;
 
 // eslint-disable-next-line max-len
-export interface IRestEntityStore<T extends { id: any }> extends IStateContainer<RestEntityState<T>> {
+export interface IRestEntityStore<T extends { id: any }> extends StateContainer<RestEntityState<T>> {
   /**
    * Update this entity via a PATCH request.
    */
