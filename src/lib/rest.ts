@@ -1,7 +1,5 @@
-import { StateContainer } from 'react-connect-state';
+import { IStateContainer } from 'react-connect-state';
 import { Omit } from 'react-bind-component';
-
-export type CollectionPatchPayload<T extends { id: any }> = Pick<T, 'id'> & Partial<Omit<T, 'id'>>;
 
 export type EntityPatchPayload<T extends { id: any }> = Partial<Omit<T, 'id'>>;
 
@@ -11,7 +9,7 @@ export interface RestCollectionState<T> {
 }
 
 // eslint-disable-next-line max-len
-export interface IRestCollectionStore<T extends { id: any }> extends StateContainer<RestCollectionState<T>> {
+export interface IRestCollectionStore<T extends { id: any }> extends IStateContainer<RestCollectionState<T>> {
   state: RestCollectionState<T>;
 
   /**
@@ -28,7 +26,7 @@ export interface RestEntityState<T> {
 }
 
 // eslint-disable-next-line max-len
-export interface IRestEntityStore<T extends { id: any }> extends StateContainer<RestEntityState<T>> {
+export interface IRestEntityStore<T extends { id: any }> extends IStateContainer<RestEntityState<T>> {
   /**
    * Update this entity via a PATCH request.
    */
