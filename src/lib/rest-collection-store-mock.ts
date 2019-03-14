@@ -1,7 +1,7 @@
 import { StateContainer } from 'react-connect-state';
 import { stub } from 'sinon';
 import { Omit } from 'react-bind-component';
-import { IRestCollectionStore, PatchPayload, RestCollectionState } from './rest';
+import { IRestCollectionStore, CollectionPatchPayload, RestCollectionState } from './rest';
 
 // eslint-disable-next-line max-len
 export default class RestCollectionStoreMock<T extends { id: any }> extends StateContainer<RestCollectionState<T>> implements IRestCollectionStore<T> {
@@ -26,9 +26,9 @@ export default class RestCollectionStoreMock<T extends { id: any }> extends Stat
   };
 
   patch = stub() as {
-    (payload: PatchPayload<T>): Promise<T>;
+    (payload: CollectionPatchPayload<T>): Promise<T>;
 
-    withArgs: (payload: PatchPayload<T>) => {
+    withArgs: (payload: CollectionPatchPayload<T>) => {
       returns: (response: T) => void;
     }
   };

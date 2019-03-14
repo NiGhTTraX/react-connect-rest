@@ -1,7 +1,9 @@
 import { StateContainer } from 'react-connect-state';
 import { Omit } from 'react-bind-component';
 
-export type PatchPayload<T extends { id: any }> = Pick<T, 'id'> & Partial<Omit<T, 'id'>>;
+export type CollectionPatchPayload<T extends { id: any }> = Pick<T, 'id'> & Partial<Omit<T, 'id'>>;
+
+export type EntityPatchPayload<T extends { id: any }> = Partial<Omit<T, 'id'>>;
 
 export interface RestCollectionState<T> {
   loading: boolean;
@@ -18,7 +20,20 @@ export interface IRestCollectionStore<T extends { id: any }> extends StateContai
   post: (payload: Partial<Omit<T, 'id'>>) => Promise<T>;
 
   /**
-   * Update an existing entity via a POST request.
+   * Update an existing entity via a PATCH request.
    */
-  patch: (payload: PatchPayload<T>) => Promise<T>;
+  patch: (payload: CollectionPatchPayload<T>) => Promise<T>;
+}
+
+export interface RestEntityState<T> {
+  loading: boolean;
+  response: T;
+}
+
+// eslint-disable-next-line max-len
+export interface IRestEntityStore<T extends { id: any }> extends StateContainer<RestEntityState<T>> {
+  /**
+   * Update this entity via a PATCH request.
+   */
+  patch: (payload: EntityPatchPayload<T>) => Promise<T>;
 }
