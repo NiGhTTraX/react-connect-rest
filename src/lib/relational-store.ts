@@ -2,7 +2,6 @@
 import { IRestCollectionStore } from './rest';
 import { StateContainer } from 'react-connect-state';
 import StorageClient from './storage-client';
-import RestCollectionStore from './rest-collection-store';
 
 export type ManyToMany<T extends { id: any }> = T['id'][] & { __fk?: 'm2m' };
 
@@ -89,7 +88,7 @@ export default class RelationalStore<T extends { id: any }> extends StateContain
     this.setState({ loading: false, response: transformedResponse });
   }
 
-  private getLink(e: HATEOASRest<T[]>, rel: Relations<T>) {
+  private getLink = (e: HATEOASRest<T[]>, rel: Relations<T>): string => {
     const link = e.links.find(l => l.rel === rel);
 
     if (!link) {
@@ -97,5 +96,5 @@ export default class RelationalStore<T extends { id: any }> extends StateContain
     }
 
     return link.href;
-  }
+  };
 }
