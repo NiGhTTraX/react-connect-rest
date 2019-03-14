@@ -4,7 +4,7 @@ import fetchMock from 'fetch-mock';
 import { Mock } from 'typemoq';
 import { describe, it, afterEach, expect, wait, $render } from './suite';
 import connectToRest from '../../src/connect';
-import RestStore from '../../src/lib/rest-store';
+import RestCollectionStore from '../../src/lib/rest-collection-store';
 
 describe('connectToRest', () => {
   afterEach(() => {
@@ -16,7 +16,7 @@ describe('connectToRest', () => {
     fetchMock.get('/api/', response);
 
     interface ViewProps {
-      container: RestStore<any>
+      container: RestCollectionStore<any>
     }
     const View = createReactMock<ViewProps>();
     const ConnectedView = connectToRest(View, '/api/', 'container');
@@ -35,10 +35,10 @@ describe('connectToRest', () => {
 
     interface ViewProps {
       // eslint-disable-next-line no-use-before-define
-      container: RestStore<any>
+      container: RestCollectionStore<any>
     }
     const View = createReactMock<ViewProps>();
-    const container = Mock.ofType<RestStore<any>>();
+    const container = Mock.ofType<RestCollectionStore<any>>();
     const ConnectedView = connectToRest(View, container.object, 'container');
 
     $render(<ConnectedView />);

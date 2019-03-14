@@ -1,10 +1,10 @@
 import { describe, it, expect } from '../suite';
 import { Mock } from 'typemoq';
 import fetchMock from 'fetch-mock';
-import RestStore from '../../../src/lib/rest-store';
+import RestCollectionStore from '../../../src/lib/rest-collection-store';
 import TransportLayer from '../../../src/lib/transport-layer';
 
-describe('RestStore', () => {
+describe('RestCollectionStore', () => {
   it('should make a GET request when created', () => {
     const transportLayer = Mock.ofType<TransportLayer>();
     transportLayer
@@ -12,7 +12,7 @@ describe('RestStore', () => {
       .returns(() => new Promise(() => {}))
       .verifiable();
 
-    const store = new RestStore(':api:', transportLayer.object);
+    const store = new RestCollectionStore(':api:', transportLayer.object);
 
     expect(store.state.loading).to.be.true;
     expect(store.state.response).to.be.empty;
@@ -28,7 +28,7 @@ describe('RestStore', () => {
       .returns(() => Promise.resolve(response))
       .verifiable();
 
-    const store = new RestStore(':api:', transportLayer.object);
+    const store = new RestCollectionStore(':api:', transportLayer.object);
 
     return new Promise(resolve => {
       store.subscribe(() => {
@@ -45,7 +45,7 @@ describe('RestStore', () => {
     const response = [{ id: 1 }, { id: 2 }];
     fetchMock.get(':api:', response);
 
-    const store = new RestStore(':api:');
+    const store = new RestCollectionStore(':api:');
 
     return new Promise(resolve => {
       store.subscribe(() => {
@@ -63,7 +63,7 @@ describe('RestStore', () => {
       .setup(x => x.get(':api:'))
       .returns(() => Promise.resolve([]));
 
-    const store = new RestStore<{ id: number, foo: string }>(':api:', transportLayer.object);
+    const store = new RestCollectionStore<{ id: number, foo: string }>(':api:', transportLayer.object);
 
     const response = { id: 1, foo: 'bar' };
 
@@ -91,7 +91,7 @@ describe('RestStore', () => {
       .setup(x => x.get(':api:'))
       .returns(() => Promise.resolve([]));
 
-    const store = new RestStore<{ id: number, foo: string }>(':api:', transportLayer.object);
+    const store = new RestCollectionStore<{ id: number, foo: string }>(':api:', transportLayer.object);
 
     const response = { id: 1, foo: 'baz' };
 

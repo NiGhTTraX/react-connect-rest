@@ -2,34 +2,13 @@ import { StateContainer } from 'react-connect-state';
 import { Omit } from 'react-bind-component';
 import TransportLayer from './transport-layer';
 import FetchTransport from './fetch-transport';
+import { IRestCollectionStore, PatchPayload, RestCollectionState } from './rest';
 
-export interface RestState<T> {
-  loading: boolean;
-
-  /**
-   * The endpoint is assumed to return a collection of entities.
-   */
-  response: T[]
-}
-
-export type PatchPayload<T extends { id: any }> = Pick<T, 'id'> & Partial<Omit<T, 'id'>>;
-
-export interface IRestStore<T extends { id: any }> extends StateContainer<RestState<T>> {
-  state: RestState<T>;
-
-  /**
-   * Create a new entity via a POST request.
-   */
-  post: (payload: Partial<Omit<T, 'id'>>) => Promise<T>;
-
-  /**
-   * Update an existing entity via a POST request.
-   */
-  patch: (payload: PatchPayload<T>) => Promise<T>;
-}
-
+/**
+ * Fetch and offer methods to mutate a REST collection.
+ */
 // eslint-disable-next-line max-len
-export default class RestStore<T extends { id: any }> extends StateContainer<RestState<T>> implements IRestStore<T> {
+export default class RestCollectionStore<T extends { id: any }> extends StateContainer<RestCollectionState<T>> implements IRestCollectionStore<T> {
   protected readonly api: string;
 
   protected readonly transportLayer: TransportLayer;

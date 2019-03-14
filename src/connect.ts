@@ -1,15 +1,16 @@
 import { ComponentType } from 'react';
 import connectToState from 'react-connect-state';
 import { Omit } from 'react-bind-component';
-import RestStore, { IRestStore } from './lib/rest-store';
+import RestCollectionStore from './lib/rest-collection-store';
 import FetchTransport from './lib/fetch-transport';
+import { IRestCollectionStore } from './lib/rest';
 
 type RestEntity = {
   id: any;
 };
 
 type PropsThatAllowContainers<ViewProps, T extends RestEntity> = {
-  [P in keyof ViewProps]: ViewProps[P] extends IRestStore<T> ? P : never;
+  [P in keyof ViewProps]: ViewProps[P] extends IRestCollectionStore<T> ? P : never;
 }[keyof ViewProps];
 
 export function connectToRest<
@@ -28,7 +29,7 @@ export function connectToRest<
   K extends PropsThatAllowContainers<ViewProps, T>
 >(
   View: ComponentType<ViewProps>,
-  container: IRestStore<T>,
+  container: IRestCollectionStore<T>,
   prop: K
 ): ComponentType<Omit<ViewProps, K>>;
 
@@ -46,13 +47,13 @@ export default function connectToRest<
   K extends PropsThatAllowContainers<ViewProps, T>
 >(
   View: ComponentType<ViewProps>,
-  containerOrApi: IRestStore<T> | string,
+  containerOrApi: IRestCollectionStore<T> | string,
   prop: K
 ): ComponentType<Omit<ViewProps, K>> {
   if (typeof containerOrApi === 'string') {
     // @ts-ignore
     return connectToState(View, {
-      [prop]: new RestStore(containerOrApi, FetchTransport)
+      [prop]: new RestCollectionStore(containerOrApi, FetchTransport)
     });
   }
 
