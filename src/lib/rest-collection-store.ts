@@ -20,4 +20,10 @@ export default class RestCollectionStore<T extends { id: any }> extends RestStor
 
     return response;
   };
+
+  delete = async (payload: Pick<T, 'id'>) => {
+    await this.transportLayer.delete(this.api, payload);
+    await this.fetchData();
+    return Promise.resolve(this.state.response);
+  };
 }

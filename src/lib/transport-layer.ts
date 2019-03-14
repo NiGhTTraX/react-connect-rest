@@ -5,4 +5,6 @@ export default interface TransportLayer {
   post<T>(path: string, body: Partial<T>): Promise<T>;
 
   patch<T>(path: string, body: Partial<T>): Promise<T>;
+
+  delete<T>(path: string, body: Partial<T>): void;
 }

@@ -24,4 +24,12 @@ export default class RestCollectionStoreMock<T extends { id: any }> extends Stat
       returns: (response: T) => void;
     }
   };
+
+  delete = stub() as {
+    (payload: Pick<T, 'id'>): Promise<T[]>;
+
+    withArgs: (payload: Pick<T, 'id'>) => {
+      returns: (response: T[]) => void;
+    }
+  };
 }

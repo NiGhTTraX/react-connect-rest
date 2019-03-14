@@ -24,4 +24,14 @@ describe('RestCollectionStoreMock', () => {
     expect(mock.post).to.have.been.calledWith({ foo: 'bar' });
     expect(response).to.deep.equal({ id: 1, foo: 'bar' });
   });
+
+  it('should spy on DELETE requests', async () => {
+    const mock = new RestCollectionStoreMock<{ id: number; foo: string }>();
+    mock.delete.withArgs({ id: 1 }).returns([]);
+
+    const response = await mock.delete({ id: 1 });
+
+    expect(mock.delete).to.have.been.calledWith({ id: 1 });
+    expect(response).to.deep.equal([]);
+  });
 });

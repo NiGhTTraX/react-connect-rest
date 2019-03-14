@@ -84,4 +84,30 @@ describe('RestCollectionStore', () => {
 
     transportLayer.verifyAll();
   });
+
+  it('should make a DELETE request', async () => {
+    const transportLayer = Mock.ofType<TransportLayer>();
+    transportLayer
+      .setup(x => x.get(':api:'))
+      .returns(() => Promise.resolve([{ id: 1, foo: 'bar' }]));
+
+    const store = new RestCollectionStore<{ id: number, foo: string }>(':api:', transportLayer.object);
+
+    transportLayer
+      .setup(x => x.delete(':api:', { id: 1 }))
+      .returns(() => Promise.resolve(undefined))
+      .verifiable();
+
+    transportLayer
+      .setup(x => x.get(':api:'))
+      .returns(() => Promise.resolve([]));
+
+    const reply = await store.delete({ id: 1 });
+
+    expect(store.state.loading).to.be.false;
+    expect(store.state.response).to.deep.equal([]);
+    expect(reply).to.deep.equal([]);
+
+    transportLayer.verifyAll();
+  });
 });

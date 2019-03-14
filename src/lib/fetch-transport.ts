@@ -12,6 +12,10 @@ const FetchTransport: TransportLayer = {
 
   patch<T>(path: string, body: Partial<T>): Promise<T> {
     return doFetchWithBody(path, body, 'PATCH');
+  },
+
+  async delete<T>(path: string, body: Partial<T>): Promise<void> {
+    await doFetchWithBody(path, body, 'DELETE');
   }
 };
 

@@ -44,4 +44,22 @@ describe('FetchTransport', () => {
 
     expect(await FetchTransport.patch<T>('/api/', { foo: 'bar' })).to.deep.equal(response);
   });
+
+  it('should make a DELETE request', async () => {
+    const response = { id: 1, foo: 'bar' };
+    type T = { id: number, foo: string };
+
+    fetchMock.delete(
+      (url, opts) => url === '/api/' && opts.body === JSON.stringify({ foo: 'bar' }),
+      response,
+      {
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+
+    expect(await FetchTransport.delete<T>('/api/', { foo: 'bar' })).to.be.undefined;
+  });
 });
