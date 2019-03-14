@@ -39,6 +39,7 @@ As mentioned, this lib has opinions about how a REST endpoint
 and how the data it returns looks:
 
 1. All entities can be uniquely identifiable by an `id` key.
+2. Collections handle POST and DELETE, entities handle PUT and PATCH.
 
 
 ## Connecting multiple views to the same API
@@ -67,14 +68,36 @@ ReactDOM.render(<div>
 ```
 
 
+## Going from a collection to a single entity
+
+```typescript
+import { RestCollectionStore, RestEntityStore } from 'react-connect-rest';
+
+type Collection = { id: number; entities: ForeignEntity[]; }
+type ForeignEntity = { id: number; foo: string; }
+
+class MyCollectionStore extends RestCollectionStore<Collection> {
+  getEntity = (id: number) => {
+      return new RestEntityStore(`/entity/${id}`)
+  }
+}
+
+const collectionStore = new MyCollectionStore('/collection');
+
+const entityStore = collectionStore.getEntity(1);
+
+entityStore.subscribe(() => console.log(entityStore.state.response.foo));
+```
+
+
 ## Testing
 
 You can create stores with mocked data for use in tests:
 
 ```tsx
-import { RestStoreMock } from 'react-connect-rest';
+import { RestCollectionStoreMock } from 'react-connect-rest';
 
-const mock = new RestStoreMock<number>([1, 2, 3]);
+const mock = new RestCollectionStoreMock<number>([1, 2, 3]);
 
 mock.state.loading === false
 mock.state.response[0] === 1
