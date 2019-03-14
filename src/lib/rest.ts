@@ -15,6 +15,9 @@ export interface IRestCollectionStore<T extends { id: any }> extends IStateConta
    */
   post: (payload: Partial<Omit<T, 'id'>>) => Promise<T>;
 
+  /**
+   * Delete a specific entity via a DELETE request.
+   */
   delete: (payload: Pick<T, 'id'>) => Promise<T[]>;
 }
 
