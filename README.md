@@ -1,6 +1,4 @@
-> This is what I imagine a type safe way of connecting a React component
-to a REST endpoint might look like. Heavily opinionated and not production
-ready, this is an _**experimental project**_.
+> An experimental and WIP approach to a type safe and self traversing REST client.
 
 [![Build Status](https://travis-ci.com/NiGhTTraX/react-connect-rest.svg?branch=master)](https://travis-ci.com/NiGhTTraX/react-connect-rest)
 [![codecov](https://codecov.io/gh/NiGhTTraX/react-connect-rest/branch/master/graph/badge.svg)](https://codecov.io/gh/NiGhTTraX/react-connect-rest)
