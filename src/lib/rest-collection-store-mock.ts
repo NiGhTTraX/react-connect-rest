@@ -21,7 +21,7 @@ export default class RestCollectionStoreMock<T extends { id: any }> extends Stat
     (payload: Partial<Omit<T, 'id'>>): Promise<T>;
 
     withArgs: (payload: Partial<Omit<T, 'id'>>) => {
-      returns: (response: T) => void;
+      returns: (response: Promise<T>) => void;
     }
   };
 

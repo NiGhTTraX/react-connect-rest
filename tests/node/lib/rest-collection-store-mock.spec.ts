@@ -17,7 +17,7 @@ describe('RestCollectionStoreMock', () => {
 
   it('should spy on POST requests', async () => {
     const mock = new RestCollectionStoreMock<{ id: number; foo: string }>();
-    mock.post.withArgs({ foo: 'bar' }).returns({ id: 1, foo: 'bar' });
+    mock.post.withArgs({ foo: 'bar' }).returns(Promise.resolve({ id: 1, foo: 'bar' }));
 
     const response = await mock.post({ foo: 'bar' });
 
