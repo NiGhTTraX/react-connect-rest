@@ -53,8 +53,12 @@ type RestStoreState<T> = {
     : T extends { id: any } ? RelationalEntity<T> : never;
 };
 
+interface IRestStore<T> {
+  post: (payload: Partial<Omit<GetEntity<T>, 'id'>>) => Promise<GetEntity<T>>;
+}
+
 // eslint-disable-next-line max-len
-export default class RestStore<T> extends StateContainer<RestStoreState<T>> {
+export default class RestStore<T> extends StateContainer<RestStoreState<T>> implements IRestStore<T> {
   private readonly transportLayer: HttpClient;
 
   private readonly api: string;
