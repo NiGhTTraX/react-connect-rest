@@ -24,7 +24,11 @@ export type HATEOASLink<T> = {
   rel: ToManyRelations<T> | ToSingleRelations<T>;
 };
 
-type RestData<T> = {
+type HATEOASMetadata<T> = {
+  __links: HATEOASLink<T>[];
+};
+
+type RestData<T> = HATEOASMetadata<T> & {
   [P in keyof T]: T[P] extends Array<infer U>
     // Transform to many relations into lists of IDs
     ? U extends { id: infer X } ? X[] : never
@@ -36,7 +40,6 @@ type RestData<T> = {
 };
 
 export type HATEOASRestResponse<T> = {
-  links: HATEOASLink<T>[];
   data: T extends Array<infer U> ? RestData<U>[] : RestData<T>;
 };
 
@@ -70,13 +73,11 @@ export default class RelationalStore<T> extends StateContainer<RelationalStoreSt
 
     let transformedResponse;
 
-    const transformEntity = this.transformEntity(response.links);
-
     if (Array.isArray(response.data)) {
-      transformedResponse = response.data.map(transformEntity);
+      transformedResponse = response.data.map(this.transformEntity);
     } else {
       // @ts-ignore
-      transformedResponse = transformEntity(response.data);
+      transformedResponse = this.transformEntity(response.data);
     }
 
     this.setState({
@@ -86,22 +87,23 @@ export default class RelationalStore<T> extends StateContainer<RelationalStoreSt
     });
   }
 
-  private transformEntity(links: HATEOASLink<T>[]) {
-    return (entity: RestData<T>): RelationalEntity<T> => {
-      const stores = links.reduce((acc, link) => ({
-        ...acc,
-        [link.rel]: new RelationalStore(
-          link.href,
-          this.transportLayer
-        )
-      }), {});
+  private transformEntity = (entity: RestData<T>): RelationalEntity<T> => {
+    const stores = entity.__links.reduce((acc, link) => ({
+      ...acc,
+      [link.rel]: new RelationalStore(
+        link.href,
+        this.transportLayer
+      )
+    }), {});
 
-
-      // @ts-ignore
-      return {
-        ...entity,
-        ...stores
-      };
+    const result = {
+      ...entity,
+      ...stores
     };
-  }
+
+    delete result.__links;
+
+    // @ts-ignore
+    return result;
+  };
 }

@@ -11,8 +11,7 @@ describe('RelationalStore', () => {
     }
 
     const postResponse: HATEOASRestResponse<Post[]> = {
-      links: [],
-      data: [{ id: 1, title: 'item 1' }]
+      data: [{ __links: [], id: 1, title: 'item 1' }]
     };
 
     const transportLayer = Mock.ofType<StorageClient>();
@@ -26,7 +25,7 @@ describe('RelationalStore', () => {
 
     await new Promise(resolve => postStore.subscribe(resolve));
 
-    expect(postStore.state.response).to.deep.equal(postResponse.data);
+    expect(postStore.state.response).to.deep.equal([{ id: 1, title: 'item 1' }]);
   });
 
   it('should transform a to many relation into a collection store', async () => {
@@ -41,17 +40,16 @@ describe('RelationalStore', () => {
     }
 
     const collectionResponse: HATEOASRestResponse<Collection[]> = {
-      // TODO: this should be on each entity, d'oh
-      links: [{ rel: 'items', href: ':item-api:' }],
       data: [{
+        __links: [{ rel: 'items', href: ':item-api:' }],
         id: 1,
         items: [1]
       }]
     };
 
     const itemResponse: HATEOASRestResponse<Item[]> = {
-      links: [],
       data: [{
+        __links: [],
         id: 1,
         title: 'item 1'
       }]
@@ -83,7 +81,6 @@ describe('RelationalStore', () => {
 
     const itemsStore = collection.items;
 
-    // await new Promise(resolve => itemsStore.subscribe(resolve));
     expect(itemsStore.state.response[0]).to.deep.equal({ id: 1, title: 'item 1' });
   });
 
@@ -99,15 +96,15 @@ describe('RelationalStore', () => {
     }
 
     const postResponse: HATEOASRestResponse<Post[]> = {
-      links: [{ rel: 'author', href: ':author-api:' }],
       data: [{
+        __links: [{ rel: 'author', href: ':author-api:' }],
         id: 1,
         author: 1
       }]
     };
     const authorResponse: HATEOASRestResponse<Author> = {
-      links: [],
       data: {
+        __links: [],
         id: 1,
         name: 'author 1'
       }
