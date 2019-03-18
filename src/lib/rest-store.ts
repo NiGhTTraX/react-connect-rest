@@ -13,7 +13,9 @@ type RelationalEntity<T> = {
 type GetEntity<T> = T extends Array<infer U> ? U : T;
 
 type ToManyRelations<T, U = GetEntity<T>> = {
-  [P in keyof U]: U[P] extends Array<any> ? P : never
+  [P in keyof U]: U[P] extends Array<infer U>
+    ? U extends { id: any } ? P : never
+    : never
 }[keyof U];
 
 type ToSingleRelations<T, U = GetEntity<T>> = {
