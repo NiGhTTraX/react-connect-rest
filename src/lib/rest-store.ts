@@ -1,46 +1,109 @@
+/* eslint-disable no-unused-vars */
+import { IRestCollectionStore, IRestEntityStore } from './rest';
 import { StateContainer } from 'react-connect-state';
 import StorageClient from './storage-client';
-import FetchClient from './fetch-client';
 
-export interface RestState<T> {
+type RelationalEntity<T> = {
+  [P in keyof T]: T[P] extends Array<infer U>
+    ? U extends { id: any } ? IRestCollectionStore<U> : never
+    : T[P] extends { id: any } ? IRestEntityStore<T[P]> : never;
+};
+
+type GetEntity<T> = T extends Array<infer U> ? U : T;
+
+type ToManyRelations<T, U = GetEntity<T>> = {
+  [P in keyof U]: U[P] extends Array<any> ? P : never
+}[keyof U];
+
+type ToSingleRelations<T, U = GetEntity<T>> = {
+  [P in keyof U]: U[P] extends { id: any } ? P : never
+}[keyof U];
+
+export type HATEOASLink<T> = {
+  href: string;
+  rel: ToManyRelations<T> | ToSingleRelations<T>;
+};
+
+type HATEOASMetadata<T> = {
+  __links: HATEOASLink<T>[];
+};
+
+type RestData<T> = HATEOASMetadata<T> & {
+  [P in keyof T]: T[P] extends Array<infer U>
+    // Transform to many relations into lists of IDs
+    ? U extends { id: infer X } ? X[] : never
+    : T[P] extends { id: infer Y }
+      // and to single relations into IDs
+      ? Y
+      // and leave everything else untouched.
+      : T[P];
+};
+
+export type HATEOASRestResponse<T> = {
+  data: T extends Array<infer U> ? RestData<U>[] : RestData<T>;
+};
+
+type RestStoreState<T> = {
   loading: boolean;
-  response: T;
-}
+  response?: T extends Array<infer U>
+    ? U extends { id: any } ? RelationalEntity<U>[] : never
+    : T extends { id: any } ? RelationalEntity<T> : never;
+};
 
-export class RestStore<
-  T extends { id: any },
-  R
-> extends StateContainer<RestState<R>> {
-  protected readonly api: string;
+// eslint-disable-next-line max-len
+export default class RestStore<T> extends StateContainer<RestStoreState<T>> {
+  private readonly transportLayer: StorageClient;
 
-  protected readonly transportLayer: StorageClient;
+  private readonly api: string;
 
-  constructor(
-    api: string,
-    initialResponse: R,
-    transportLayer: StorageClient = FetchClient
-  ) {
+  constructor(api: string, transportLayer: StorageClient) {
     super();
-
-    this.transportLayer = transportLayer;
     this.api = api;
+    this.transportLayer = transportLayer;
 
     this.state = {
-      loading: true,
-      response: initialResponse
+      loading: true
     };
 
     this.fetchData();
   }
 
-  private onFetchData = (response: R) => {
+  private async fetchData() {
+    const response = await this.transportLayer.get<HATEOASRestResponse<T>>(this.api);
+
+    let transformedResponse;
+
+    if (Array.isArray(response.data)) {
+      transformedResponse = response.data.map(this.transformEntity);
+    } else {
+      // @ts-ignore
+      transformedResponse = this.transformEntity(response.data);
+    }
+
     this.setState({
       loading: false,
-      response
+      // @ts-ignore
+      response: transformedResponse
     });
-  };
-
-  protected fetchData() {
-    return this.transportLayer.get<R>(this.api).then(this.onFetchData);
   }
+
+  private transformEntity = (entity: RestData<T>): RelationalEntity<T> => {
+    const stores = entity.__links.reduce((acc, link) => ({
+      ...acc,
+      [link.rel]: new RestStore(
+        link.href,
+        this.transportLayer
+      )
+    }), {});
+
+    const result = {
+      ...entity,
+      ...stores
+    };
+
+    delete result.__links;
+
+    // @ts-ignore
+    return result;
+  };
 }

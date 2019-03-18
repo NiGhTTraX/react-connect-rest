@@ -2,13 +2,13 @@ import { Omit } from 'react-bind-component';
 import StorageClient from './storage-client';
 import FetchClient from './fetch-client';
 import { IRestCollectionStore } from './rest';
-import { RestStore } from './rest-store';
+import { BaseRestStore } from './base-rest-store';
 
 /**
  * Fetch and offer methods to mutate a REST collection.
  */
 // eslint-disable-next-line max-len
-export default class RestCollectionStore<T extends { id: any }> extends RestStore<T, T[]> implements IRestCollectionStore<T> {
+export default class RestCollectionStore<T extends { id: any }> extends BaseRestStore<T, T[]> implements IRestCollectionStore<T> {
   constructor(api: string, transportLayer: StorageClient = FetchClient) {
     super(api, [], transportLayer);
   }

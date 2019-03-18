@@ -1,9 +1,9 @@
 import { Mock } from 'typemoq';
-import { describe, expect, it } from './suite';
-import RelationalStore, { HATEOASRestResponse } from '../../src/lib/relational-store';
-import StorageClient from '../../src/lib/storage-client';
+import { describe, expect, it } from '../suite';
+import RestStore, { HATEOASRestResponse } from '../../../src/lib/rest-store';
+import StorageClient from '../../../src/lib/storage-client';
 
-describe('RelationalStore', () => {
+describe('RestStore', () => {
   it('should leave primitives alone', async () => {
     interface Post {
       id: number;
@@ -21,7 +21,7 @@ describe('RelationalStore', () => {
       .returns(() => Promise.resolve(postResponse))
       .verifiable();
 
-    const postStore = new RelationalStore<Post[]>(':post-api:', transportLayer.object);
+    const postStore = new RestStore<Post[]>(':post-api:', transportLayer.object);
 
     await new Promise(resolve => postStore.subscribe(resolve));
 
@@ -67,7 +67,7 @@ describe('RelationalStore', () => {
       .returns(() => Promise.resolve(itemResponse))
       .verifiable();
 
-    const collectionStore = new RelationalStore<Collection[]>(':collection-api:', transportLayer.object);
+    const collectionStore = new RestStore<Collection[]>(':collection-api:', transportLayer.object);
 
     await new Promise(resolve => collectionStore.subscribe(resolve));
 
@@ -122,7 +122,7 @@ describe('RelationalStore', () => {
       .returns(() => Promise.resolve(authorResponse))
       .verifiable();
 
-    const postStore = new RelationalStore<Post[]>(':post-api:', transportLayer.object);
+    const postStore = new RestStore<Post[]>(':post-api:', transportLayer.object);
 
     await new Promise(resolve => postStore.subscribe(resolve));
 

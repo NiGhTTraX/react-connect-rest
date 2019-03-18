@@ -43,33 +43,33 @@ and how the data it returns looks:
 ## Resolving relations via HATEOAS
 
 ```typescript
-import { RelationalStore } from 'react-connect-rest';
+import { RestStore } from 'react-connect-rest';
 
-type ForeignEntity = { id: number; foo: string; }
-type Collection = { id: number; entities: ForeignEntity[]; }
+type Author = { id: number; name: string; }
+type Book = { id: number; authors: Author[]; }
 
-//  GET /collection
+//  GET /book
 //    {
 //      data: [{
-//        __links: [{ rel: 'entities', href: '/entities?collection=1' }],
+//        __links: [{ rel: 'authors', href: '/author/?book=1' }],
 //        id: 1,
-//        entities: [1]
+//        authors: [1]
 //      }]
 //    }
 //
-//  GET /entities?collection=1
+//  GET /author/?book=1
 //    {
 //       data: [{
 //         __links: [],
 //         id: 1,
-//         foo: 'bar'
+//         name: 'Foo Bar'
 //       }]
 //    }
-const collectionStore = new RelationalStore<Collection[]>('/collection');
+const bookStore = new RestStore<Book[]>('/book');
 
-const entityStore = collectionStore.state.response.data[0].entities;
+const firstBooksAuthors = bookStore.state.response.data[0].authors;
 
-console.log(entityStore.state.response[0].data.foo);
+console.log(firstBooksAuthors.state.response[0].data.name);
 ```
 
 
