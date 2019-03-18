@@ -3,10 +3,8 @@ import { IRestCollectionStore } from './rest';
 import { StateContainer } from 'react-connect-state';
 import StorageClient from './storage-client';
 
-export type ManyToMany<T extends { id: any }> = T['id'][] & { __fk?: 'm2m' };
-
 type RelationalEntity<T extends { id: any }> = {
-  [P in keyof T]: T[P] extends ManyToMany<infer U>
+  [P in keyof T]: T[P] extends Array<infer U>
     // @ts-ignore
     ? IRestCollectionStore<U>
     : T[P];
@@ -14,24 +12,34 @@ type RelationalEntity<T extends { id: any }> = {
 
 type GetEntity<T> = T extends Array<infer U> ? U : T;
 
-type Relations<T, U = GetEntity<T>> = {
-  [P in keyof U]: U[P] extends ManyToMany<any> ? P : never
+type ToManyRelations<T, U = GetEntity<T>> = {
+  [P in keyof U]: U[P] extends Array<any> ? P : never
 }[keyof U];
 
 export type HATEOASLink<T> = {
   type: 'm2m';
   href: string;
-  rel: Relations<T>;
+  rel: ToManyRelations<T>;
+};
+
+type RestResponseWithRelationsTransformed<T> = {
+  [P in keyof T]: T[P] extends Array<infer U>
+    ? U extends { id: infer X }
+      ? X[]
+      : never
+    : T[P];
 };
 
 export type HATEOASRest<T> = {
   links: HATEOASLink<T>[];
-  data: T;
+  data: T extends Array<infer U>
+    ? RestResponseWithRelationsTransformed<U>[]
+    : RestResponseWithRelationsTransformed<T>;
 };
 
 function isManyToMany<T>(
   response: HATEOASRest<T>,
-  key: Relations<T>
+  key: ToManyRelations<T>
 ): boolean {
   return !!response.links.find(
     link => link.rel === key && link.type === 'm2m'
@@ -75,7 +83,7 @@ export default class RelationalStore<T extends { id: any }> extends StateContain
       const restCollectionStores = manyToManyKeys.reduce((acc, key) => ({
         ...acc,
         [key]: new RelationalStore(
-          this.getLink(response, key as Relations<T>),
+          this.getLink(response, key as ToManyRelations<T>),
           this.transportLayer
         )
       }), {});
@@ -88,7 +96,7 @@ export default class RelationalStore<T extends { id: any }> extends StateContain
     this.setState({ loading: false, response: transformedResponse });
   }
 
-  private getLink = (e: HATEOASRest<T[]>, rel: Relations<T>): string => {
+  private getLink = (e: HATEOASRest<T[]>, rel: ToManyRelations<T>): string => {
     const link = e.links.find(l => l.rel === rel);
 
     if (!link) {

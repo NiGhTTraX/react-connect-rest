@@ -1,9 +1,6 @@
 import { Mock } from 'typemoq';
 import { describe, expect, it } from './suite';
-import RelationalStore, {
-  HATEOASRest,
-  ManyToMany
-} from '../../src/lib/relational-store';
+import RelationalStore, { HATEOASRest } from '../../src/lib/relational-store';
 import StorageClient from '../../src/lib/storage-client';
 
 describe('RelationalStore', () => {
@@ -32,7 +29,7 @@ describe('RelationalStore', () => {
     expect(postStore.state.response).to.deep.equal(postResponse.data);
   });
 
-  it('should transform a m2m relation into a store', async () => {
+  it('should transform a to many relation into a collection store', async () => {
     interface Item {
       id: number;
       title: string;
@@ -40,7 +37,7 @@ describe('RelationalStore', () => {
 
     interface Collection {
       id: number;
-      items: ManyToMany<Item>;
+      items: Item[];
     }
 
     const collectionResponse: HATEOASRest<Collection[]> = {
