@@ -37,8 +37,8 @@ As mentioned, this lib has opinions about how a REST endpoint
 and how the data it returns looks:
 
 1. All entities can be uniquely identifiable by an `id` key.
-2. Collections handle POST and DELETE, entities handle PUT and PATCH.
-3. The API is self describing via HATEOAS metadata stored under a `__links` key.
+1. The API is self describing via HATEOAS metadata stored under a `__links` key.
+
 
 ## Resolving relations via HATEOAS
 
