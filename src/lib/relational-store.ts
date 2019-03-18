@@ -17,12 +17,11 @@ type ToManyRelations<T, U = GetEntity<T>> = {
 }[keyof U];
 
 export type HATEOASLink<T> = {
-  type: 'm2m';
   href: string;
   rel: ToManyRelations<T>;
 };
 
-type RestResponseWithRelationsTransformed<T> = {
+type RestData<T> = {
   [P in keyof T]: T[P] extends Array<infer U>
     ? U extends { id: infer X }
       ? X[]
@@ -33,18 +32,9 @@ type RestResponseWithRelationsTransformed<T> = {
 export type HATEOASRest<T> = {
   links: HATEOASLink<T>[];
   data: T extends Array<infer U>
-    ? RestResponseWithRelationsTransformed<U>[]
-    : RestResponseWithRelationsTransformed<T>;
+    ? RestData<U>[]
+    : RestData<T>;
 };
-
-function isManyToMany<T>(
-  response: HATEOASRest<T>,
-  key: ToManyRelations<T>
-): boolean {
-  return !!response.links.find(
-    link => link.rel === key && link.type === 'm2m'
-  );
-}
 
 type RelationalCollectionStoreState<T extends { id: any }> = {
   loading: boolean;
@@ -73,36 +63,26 @@ export default class RelationalStore<T extends { id: any }> extends StateContain
   private async fetchData() {
     const response = await this.transportLayer.get<HATEOASRest<T[]>>(this.api);
 
-    // @ts-ignore
-    const transformedResponse: RelationalEntity<T>[] = response.data.map(e => {
-      const manyToManyKeys = Object.keys(e).filter(
-        // @ts-ignore
-        key => isManyToMany(response, key)
-      );
+    const toManyLinks = response.links.filter(
+      link => Array.isArray(response.data[0][link.rel])
+    );
 
-      const restCollectionStores = manyToManyKeys.reduce((acc, key) => ({
+    // @ts-ignore
+    const transformedResponse: RelationalEntity<T>[] = response.data.map(entity => {
+      const restCollectionStores = toManyLinks.reduce((acc, link) => ({
         ...acc,
-        [key]: new RelationalStore(
-          this.getLink(response, key as ToManyRelations<T>),
+        [link.rel]: new RelationalStore(
+          link.href,
           this.transportLayer
         )
       }), {});
+
       return {
-        ...e,
+        ...entity,
         ...restCollectionStores
       };
     });
 
     this.setState({ loading: false, response: transformedResponse });
   }
-
-  private getLink = (e: HATEOASRest<T[]>, rel: ToManyRelations<T>): string => {
-    const link = e.links.find(l => l.rel === rel);
-
-    if (!link) {
-      throw new Error(`Link ${rel} not found`);
-    }
-
-    return link.href;
-  };
 }

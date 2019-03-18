@@ -41,7 +41,7 @@ describe('RelationalStore', () => {
     }
 
     const collectionResponse: HATEOASRest<Collection[]> = {
-      links: [{ rel: 'items', href: ':item-api:', type: 'm2m' }],
+      links: [{ rel: 'items', href: ':item-api:' }],
       data: [{
         id: 1,
         items: [1]
