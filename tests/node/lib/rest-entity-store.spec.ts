@@ -1,11 +1,11 @@
 import { describe, it, expect } from '../suite';
 import { Mock } from 'typemoq';
 import RestEntityStore from '../../../src/lib/rest-entity-store';
-import StorageClient from '../../../src/lib/storage-client';
+import HttpClient from '../../../src/lib/http-client';
 
 describe('RestEntityStore', () => {
   it('should make a GET request when created', () => {
-    const transportLayer = Mock.ofType<StorageClient>();
+    const transportLayer = Mock.ofType<HttpClient>();
     transportLayer
       .setup(x => x.get(':api:'))
       .returns(() => new Promise(() => {}))
@@ -21,7 +21,7 @@ describe('RestEntityStore', () => {
 
   it('should store the GET response', () => {
     const response = [{ id: 1 }, { id: 2 }];
-    const transportLayer = Mock.ofType<StorageClient>();
+    const transportLayer = Mock.ofType<HttpClient>();
     transportLayer
       .setup(x => x.get(':api:'))
       .returns(() => Promise.resolve(response))
@@ -41,7 +41,7 @@ describe('RestEntityStore', () => {
   });
 
   it('should make a PATCH request', async () => {
-    const transportLayer = Mock.ofType<StorageClient>();
+    const transportLayer = Mock.ofType<HttpClient>();
     transportLayer
       .setup(x => x.get(':api:'))
       .returns(() => Promise.resolve([]));
@@ -51,7 +51,7 @@ describe('RestEntityStore', () => {
     const response = { id: 1, foo: 'baz' };
 
     transportLayer
-      .setup(x => x.update(':api:', { foo: 'baz' }))
+      .setup(x => x.patch(':api:', { foo: 'baz' }))
       .returns(() => Promise.resolve(response))
       .verifiable();
 

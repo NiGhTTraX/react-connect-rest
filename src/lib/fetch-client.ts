@@ -1,16 +1,16 @@
-import StorageClient from './storage-client';
+import HttpClient from './http-client';
 
-const FetchClient: StorageClient = {
+const FetchClient: HttpClient = {
   get<T>(path: string) {
     // @ts-ignore
     return fetch(path).then(resp => resp.json() as T);
   },
 
-  set<T>(path: string, body: Partial<T>) {
+  post<T>(path: string, body: Partial<T>) {
     return doFetchWithBody(path, body, 'POST');
   },
 
-  update<T>(path: string, body: Partial<T>): Promise<T> {
+  patch<T>(path: string, body: Partial<T>): Promise<T> {
     return doFetchWithBody(path, body, 'PATCH');
   },
 

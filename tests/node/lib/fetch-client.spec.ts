@@ -24,7 +24,7 @@ describe('FetchClient', () => {
       }
     );
 
-    expect(await FetchClient.set<T>('/api/', { foo: 'bar' })).to.deep.equal(response);
+    expect(await FetchClient.post<T>('/api/', { foo: 'bar' })).to.deep.equal(response);
   });
 
   it('should make a PATCH request', async () => {
@@ -42,7 +42,7 @@ describe('FetchClient', () => {
       }
     );
 
-    expect(await FetchClient.update<T>('/api/', { foo: 'bar' })).to.deep.equal(response);
+    expect(await FetchClient.patch<T>('/api/', { foo: 'bar' })).to.deep.equal(response);
   });
 
   it('should make a DELETE request', async () => {

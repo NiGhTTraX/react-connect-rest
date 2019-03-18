@@ -1,6 +1,6 @@
 import { describe, it, expect } from '../../suite';
 import { It, Mock, Times } from 'typemoq';
-import StorageClient from '../../../../src/lib/storage-client';
+import HttpClient from '../../../../src/lib/http-client';
 import RestStore, { HATEOASRestResponse } from '../../../../src/lib/rest-store';
 
 describe('RestStore', () => {
@@ -10,7 +10,7 @@ describe('RestStore', () => {
   }
 
   it('should make a GET request when created', () => {
-    const transportLayer = Mock.ofType<StorageClient>();
+    const transportLayer = Mock.ofType<HttpClient>();
     transportLayer
       .setup(x => x.get<HATEOASRestResponse<Foo[]>>(':api:'))
       .returns(() => new Promise(() => {}))
@@ -23,7 +23,7 @@ describe('RestStore', () => {
   });
 
   it('should have an initial state', () => {
-    const transportLayer = Mock.ofType<StorageClient>();
+    const transportLayer = Mock.ofType<HttpClient>();
     transportLayer
       .setup(x => x.get<HATEOASRestResponse<Foo[]>>(It.isAny()))
       .returns(() => new Promise(() => {}))
@@ -43,7 +43,7 @@ describe('RestStore', () => {
       ]
     };
 
-    const transportLayer = Mock.ofType<StorageClient>();
+    const transportLayer = Mock.ofType<HttpClient>();
     transportLayer
       .setup(x => x.get<HATEOASRestResponse<Foo[]>>(':api:'))
       .returns(() => Promise.resolve(response))
@@ -63,7 +63,7 @@ describe('RestStore', () => {
   });
 
   it('should make a POST request', async () => {
-    const transportLayer = Mock.ofType<StorageClient>();
+    const transportLayer = Mock.ofType<HttpClient>();
     transportLayer
       .setup(x => x.get<HATEOASRestResponse<Foo[]>>(':api:'))
       .returns(() => Promise.resolve({ data: [] }));
@@ -77,7 +77,7 @@ describe('RestStore', () => {
     };
 
     transportLayer
-      .setup(x => x.set(':api:', { foo: 'bar' }))
+      .setup(x => x.post(':api:', { foo: 'bar' }))
       .returns(() => Promise.resolve({ id: 1, foo: 'bar' }))
       .verifiable();
 

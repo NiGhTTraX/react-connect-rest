@@ -1,7 +1,7 @@
 import { Mock } from 'typemoq';
 import { describe, expect, it } from '../../suite';
 import RestStore, { HATEOASRestResponse } from '../../../../src/lib/rest-store';
-import StorageClient from '../../../../src/lib/storage-client';
+import HttpClient from '../../../../src/lib/http-client';
 
 describe('RestStore', () => {
   describe('relations', () => {
@@ -15,7 +15,7 @@ describe('RestStore', () => {
         data: [{ __links: [], id: 1, title: 'item 1' }]
       };
 
-      const transportLayer = Mock.ofType<StorageClient>();
+      const transportLayer = Mock.ofType<HttpClient>();
 
       transportLayer
         .setup(x => x.get(':post-api:'))
@@ -56,7 +56,7 @@ describe('RestStore', () => {
         }]
       };
 
-      const transportLayer = Mock.ofType<StorageClient>();
+      const transportLayer = Mock.ofType<HttpClient>();
 
       transportLayer
         .setup(x => x.get(':collection-api:'))
@@ -111,7 +111,7 @@ describe('RestStore', () => {
         }
       };
 
-      const transportLayer = Mock.ofType<StorageClient>();
+      const transportLayer = Mock.ofType<HttpClient>();
 
       transportLayer
         .setup(x => x.get(':post-api:'))

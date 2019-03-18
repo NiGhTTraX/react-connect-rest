@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { IRestCollectionStore, IRestEntityStore } from './rest';
 import { StateContainer } from 'react-connect-state';
-import StorageClient from './storage-client';
+import HttpClient from './http-client';
 import { Omit } from 'yargs';
 
 type RelationalEntity<T> = {
@@ -53,11 +53,11 @@ type RestStoreState<T> = {
 
 // eslint-disable-next-line max-len
 export default class RestStore<T> extends StateContainer<RestStoreState<T>> {
-  private readonly transportLayer: StorageClient;
+  private readonly transportLayer: HttpClient;
 
   private readonly api: string;
 
-  constructor(api: string, transportLayer: StorageClient) {
+  constructor(api: string, transportLayer: HttpClient) {
     super();
     this.api = api;
     this.transportLayer = transportLayer;
@@ -70,7 +70,7 @@ export default class RestStore<T> extends StateContainer<RestStoreState<T>> {
   }
 
   post = async (payload: Partial<Omit<GetEntity<T>, 'id'>>): Promise<GetEntity<T>> => {
-    const reply = await this.transportLayer.set<GetEntity<T>>(
+    const reply = await this.transportLayer.post<GetEntity<T>>(
       this.api,
       // @ts-ignore
       payload

@@ -1,5 +1,5 @@
 import { StateContainer } from 'react-connect-state';
-import StorageClient from './storage-client';
+import HttpClient from './http-client';
 import FetchClient from './fetch-client';
 
 export interface RestState<T> {
@@ -13,12 +13,12 @@ export class BaseRestStore<
 > extends StateContainer<RestState<R>> {
   protected readonly api: string;
 
-  protected readonly transportLayer: StorageClient;
+  protected readonly transportLayer: HttpClient;
 
   constructor(
     api: string,
     initialResponse: R,
-    transportLayer: StorageClient = FetchClient
+    transportLayer: HttpClient = FetchClient
   ) {
     super();
 
