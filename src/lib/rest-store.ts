@@ -2,6 +2,7 @@
 import { IRestCollectionStore, IRestEntityStore } from './rest';
 import { StateContainer } from 'react-connect-state';
 import StorageClient from './storage-client';
+import { Omit } from 'yargs';
 
 type RelationalEntity<T> = {
   [P in keyof T]: T[P] extends Array<infer U>
@@ -67,6 +68,18 @@ export default class RestStore<T> extends StateContainer<RestStoreState<T>> {
 
     this.fetchData();
   }
+
+  post = async (payload: Partial<Omit<GetEntity<T>, 'id'>>): Promise<GetEntity<T>> => {
+    const reply = await this.transportLayer.set<GetEntity<T>>(
+      this.api,
+      // @ts-ignore
+      payload
+    );
+
+    await this.fetchData();
+
+    return reply;
+  };
 
   private async fetchData() {
     const response = await this.transportLayer.get<HATEOASRestResponse<T>>(this.api);

@@ -12,12 +12,12 @@ describe('RestStore', () => {
   it('should make a GET request when created', () => {
     const transportLayer = Mock.ofType<StorageClient>();
     transportLayer
-      .setup(x => x.get(':api:'))
+      .setup(x => x.get<HATEOASRestResponse<Foo[]>>(':api:'))
       .returns(() => new Promise(() => {}))
       .verifiable(Times.once());
 
     // eslint-disable-next-line no-new
-    new RestStore<Foo>(':api:', transportLayer.object);
+    new RestStore<Foo[]>(':api:', transportLayer.object);
 
     transportLayer.verifyAll();
   });
@@ -25,11 +25,11 @@ describe('RestStore', () => {
   it('should have an initial state', () => {
     const transportLayer = Mock.ofType<StorageClient>();
     transportLayer
-      .setup(x => x.get(It.isAny()))
+      .setup(x => x.get<HATEOASRestResponse<Foo[]>>(It.isAny()))
       .returns(() => new Promise(() => {}))
       .verifiable();
 
-    const store = new RestStore<Foo>(':irrelevant:', transportLayer.object);
+    const store = new RestStore<Foo[]>(':irrelevant:', transportLayer.object);
 
     expect(store.state.loading).to.be.true;
     expect(store.state.response).to.be.undefined;
@@ -45,11 +45,11 @@ describe('RestStore', () => {
 
     const transportLayer = Mock.ofType<StorageClient>();
     transportLayer
-      .setup(x => x.get(':api:'))
+      .setup(x => x.get<HATEOASRestResponse<Foo[]>>(':api:'))
       .returns(() => Promise.resolve(response))
       .verifiable();
 
-    const store = new RestStore<Foo>(':api:', transportLayer.object);
+    const store = new RestStore<Foo[]>(':api:', transportLayer.object);
 
     await new Promise(resolve => store.subscribe(resolve));
 
@@ -58,6 +58,38 @@ describe('RestStore', () => {
       { id: 1, foo: 'bar' },
       { id: 2, foo: 'baz' }
     ]);
+
+    transportLayer.verifyAll();
+  });
+
+  it('should make a POST request', async () => {
+    const transportLayer = Mock.ofType<StorageClient>();
+    transportLayer
+      .setup(x => x.get<HATEOASRestResponse<Foo[]>>(':api:'))
+      .returns(() => Promise.resolve({ data: [] }));
+
+    const store = new RestStore<Foo[]>(':api:', transportLayer.object);
+
+    const getResponse: HATEOASRestResponse<Foo[]> = {
+      data: [
+        { __links: [], id: 1, foo: 'bar' }
+      ]
+    };
+
+    transportLayer
+      .setup(x => x.set(':api:', { foo: 'bar' }))
+      .returns(() => Promise.resolve({ id: 1, foo: 'bar' }))
+      .verifiable();
+
+    transportLayer
+      .setup(x => x.get<HATEOASRestResponse<Foo[]>>(':api:'))
+      .returns(() => Promise.resolve(getResponse));
+
+    const reply = await store.post({ foo: 'bar' });
+
+    expect(store.state.loading).to.be.false;
+    expect(store.state.response).to.deep.equal([{ id: 1, foo: 'bar' }]);
+    expect(reply).to.deep.equal({ id: 1, foo: 'bar' });
 
     transportLayer.verifyAll();
   });
