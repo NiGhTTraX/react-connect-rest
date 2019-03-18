@@ -84,23 +84,23 @@ export default class RestStore<T> extends StateContainer<RestStoreState<T>> {
   private async fetchData() {
     const response = await this.transportLayer.get<HATEOASRestResponse<T>>(this.api);
 
-    let transformedResponse;
+    let expandedResponse;
 
     if (Array.isArray(response.data)) {
-      transformedResponse = response.data.map(this.transformEntity);
+      expandedResponse = response.data.map(this.expandLinks);
     } else {
       // @ts-ignore
-      transformedResponse = this.transformEntity(response.data);
+      expandedResponse = this.expandLinks(response.data);
     }
 
     this.setState({
       loading: false,
       // @ts-ignore
-      response: transformedResponse
+      response: expandedResponse
     });
   }
 
-  private transformEntity = (entity: RestData<T>): RelationalEntity<T> => {
+  private expandLinks = (entity: RestData<T>): RelationalEntity<T> => {
     const stores = entity.__links.reduce((acc, link) => ({
       ...acc,
       [link.rel]: new RestStore(
