@@ -22,7 +22,7 @@ type ToSingleRelations<T, U = GetEntity<T>> = {
   [P in keyof U]: U[P] extends { id: any } ? P : never
 }[keyof U];
 
-export type HATEOASLink<T> = {
+type HATEOASLink<T> = {
   href: string;
   rel: ToManyRelations<T> | ToSingleRelations<T>;
 };
