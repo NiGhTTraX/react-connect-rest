@@ -1,13 +1,12 @@
 /* eslint-disable no-unused-vars */
-import { IRestCollectionStore } from './rest';
+import { IRestCollectionStore, IRestEntityStore } from './rest';
 import { StateContainer } from 'react-connect-state';
 import StorageClient from './storage-client';
 
-type RelationalEntity<T extends { id: any }> = {
+type RelationalEntity<T> = {
   [P in keyof T]: T[P] extends Array<infer U>
-    // @ts-ignore
-    ? IRestCollectionStore<U>
-    : T[P];
+    ? U extends { id: any } ? IRestCollectionStore<U> : never
+    : T[P] extends { id: any } ? IRestEntityStore<T[P]> : never;
 };
 
 type GetEntity<T> = T extends Array<infer U> ? U : T;
@@ -16,33 +15,40 @@ type ToManyRelations<T, U = GetEntity<T>> = {
   [P in keyof U]: U[P] extends Array<any> ? P : never
 }[keyof U];
 
+type ToSingleRelations<T, U = GetEntity<T>> = {
+  [P in keyof U]: U[P] extends { id: any } ? P : never
+}[keyof U];
+
 export type HATEOASLink<T> = {
   href: string;
-  rel: ToManyRelations<T>;
+  rel: ToManyRelations<T> | ToSingleRelations<T>;
 };
 
 type RestData<T> = {
   [P in keyof T]: T[P] extends Array<infer U>
-    ? U extends { id: infer X }
-      ? X[]
-      : never
-    : T[P];
+    // Transform to many relations into lists of IDs
+    ? U extends { id: infer X } ? X[] : never
+    : T[P] extends { id: infer Y }
+      // and to single relations into IDs
+      ? Y
+      // and leave everything else untouched.
+      : T[P];
 };
 
-export type HATEOASRest<T> = {
+export type HATEOASRestResponse<T> = {
   links: HATEOASLink<T>[];
-  data: T extends Array<infer U>
-    ? RestData<U>[]
-    : RestData<T>;
+  data: T extends Array<infer U> ? RestData<U>[] : RestData<T>;
 };
 
-type RelationalCollectionStoreState<T extends { id: any }> = {
+type RelationalStoreState<T> = {
   loading: boolean;
-  response: RelationalEntity<T>[];
+  response?: T extends Array<infer U>
+    ? U extends { id: any } ? RelationalEntity<U>[] : never
+    : T extends { id: any } ? RelationalEntity<T> : never;
 };
 
 // eslint-disable-next-line max-len
-export default class RelationalStore<T extends { id: any }> extends StateContainer<RelationalCollectionStoreState<T>> {
+export default class RelationalStore<T> extends StateContainer<RelationalStoreState<T>> {
   private readonly transportLayer: StorageClient;
 
   private readonly api: string;
@@ -53,23 +59,36 @@ export default class RelationalStore<T extends { id: any }> extends StateContain
     this.transportLayer = transportLayer;
 
     this.state = {
-      loading: true,
-      response: []
+      loading: true
     };
 
     this.fetchData();
   }
 
   private async fetchData() {
-    const response = await this.transportLayer.get<HATEOASRest<T[]>>(this.api);
+    const response = await this.transportLayer.get<HATEOASRestResponse<T>>(this.api);
 
-    const toManyLinks = response.links.filter(
-      link => Array.isArray(response.data[0][link.rel])
-    );
+    let transformedResponse;
 
-    // @ts-ignore
-    const transformedResponse: RelationalEntity<T>[] = response.data.map(entity => {
-      const restCollectionStores = toManyLinks.reduce((acc, link) => ({
+    const transformEntity = this.transformEntity(response.links);
+
+    if (Array.isArray(response.data)) {
+      transformedResponse = response.data.map(transformEntity);
+    } else {
+      // @ts-ignore
+      transformedResponse = transformEntity(response.data);
+    }
+
+    this.setState({
+      loading: false,
+      // @ts-ignore
+      response: transformedResponse
+    });
+  }
+
+  private transformEntity(links: HATEOASLink<T>[]) {
+    return (entity: RestData<T>): RelationalEntity<T> => {
+      const stores = links.reduce((acc, link) => ({
         ...acc,
         [link.rel]: new RelationalStore(
           link.href,
@@ -77,12 +96,12 @@ export default class RelationalStore<T extends { id: any }> extends StateContain
         )
       }), {});
 
+
+      // @ts-ignore
       return {
         ...entity,
-        ...restCollectionStores
+        ...stores
       };
-    });
-
-    this.setState({ loading: false, response: transformedResponse });
+    };
   }
 }
