@@ -38,6 +38,39 @@ and how the data it returns looks:
 
 1. All entities can be uniquely identifiable by an `id` key.
 2. Collections handle POST and DELETE, entities handle PUT and PATCH.
+3. The API is self describing via HATEOAS metadata stored under a `__links` key.
+
+## Resolving relations via HATEOAS
+
+```typescript
+import { RelationalStore } from 'react-connect-rest';
+
+type ForeignEntity = { id: number; foo: string; }
+type Collection = { id: number; entities: ForeignEntity[]; }
+
+//  GET /collection
+//    {
+//      data: [{
+//        __links: [{ rel: 'entities', href: '/entities?collection=1' }],
+//        id: 1,
+//        entities: [1]
+//      }]
+//    }
+//
+//  GET /entities?collection=1
+//    {
+//       data: [{
+//         __links: [],
+//         id: 1,
+//         foo: 'bar'
+//       }]
+//    }
+const collectionStore = new RelationalStore<Collection[]>('/collection');
+
+const entityStore = collectionStore.state.response.data[0].entities;
+
+console.log(entityStore.state.response[0].data.foo);
+```
 
 
 ## Connecting multiple views to the same API
@@ -63,28 +96,6 @@ ReactDOM.render(<div>
   <ConnectedView1 />
   <ConnectedView2 />
 </div>);
-```
-
-
-## Going from a collection to a single entity
-
-```typescript
-import { RestCollectionStore, RestEntityStore } from 'react-connect-rest';
-
-type Collection = { id: number; entities: ForeignEntity[]; }
-type ForeignEntity = { id: number; foo: string; }
-
-class MyCollectionStore extends RestCollectionStore<Collection> {
-  getEntity = (id: number) => {
-      return new RestEntityStore(`/entity/${id}`)
-  }
-}
-
-const collectionStore = new MyCollectionStore('/collection');
-
-const entityStore = collectionStore.getEntity(1);
-
-entityStore.subscribe(() => console.log(entityStore.state.response.foo));
 ```
 
 
