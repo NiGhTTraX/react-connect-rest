@@ -67,9 +67,9 @@ type Book = { id: number; authors: Author[]; }
 //    }
 const bookStore = new RestStore<Book[]>('/book');
 
-const firstBooksAuthors = bookStore.state.response.data[0].authors;
+const firstBooksAuthors = bookStore.state.response.authors;
 
-console.log(firstBooksAuthors.state.response[0].data.name);
+console.log(firstBooksAuthors.state.response[0].name);
 ```
 
 
