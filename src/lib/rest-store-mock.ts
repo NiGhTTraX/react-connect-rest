@@ -1,7 +1,11 @@
 import { StateContainer } from 'react-connect-state';
-import { Omit } from 'react-bind-component';
-import { stub } from 'sinon';
-import { IRestStore, RestStoreResponse, RestStoreState, GetEntity } from './rest-store';
+import { spy } from 'sinon';
+import {
+  IRestStore,
+  RestStoreResponse,
+  RestStoreState,
+  PostPayload
+} from './rest-store';
 
 // eslint-disable-next-line max-len
 export default class RestStoreMock<T> extends StateContainer<RestStoreState<T>> implements IRestStore<T> {
@@ -13,11 +17,9 @@ export default class RestStoreMock<T> extends StateContainer<RestStoreState<T>> 
       : { loading: false, response: mock };
   }
 
-  post = stub() as {
-    (payload: Partial<Omit<GetEntity<T>, 'id'>>): Promise<GetEntity<T>>;
+  post = spy() as {
+    (payload: PostPayload<T>): Promise<void>;
 
-    withArgs: (payload: Partial<Omit<GetEntity<T>, 'id'>>) => {
-      returns: (response: Promise<GetEntity<T>>) => void;
-    }
+    calledWith: (payload: PostPayload<T>) => boolean;
   };
 }

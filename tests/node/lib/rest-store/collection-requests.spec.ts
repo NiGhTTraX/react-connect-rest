@@ -79,18 +79,17 @@ describe('RestStore', () => {
 
       transportLayer
         .setup(x => x.post(':api:', { foo: 'bar' }))
-        .returns(() => Promise.resolve({ id: 1, foo: 'bar' }))
+        .returns(() => Promise.resolve({ data: { __links: [], id: 1, foo: 'bar' } }))
         .verifiable();
 
       transportLayer
         .setup(x => x.get<HATEOASRestResponse<Foo[]>>(':api:'))
         .returns(() => Promise.resolve(getResponse));
 
-      const reply = await store.post({ foo: 'bar' });
+      await store.post({ foo: 'bar' });
 
       expect(store.state.loading).to.be.false;
       expect(store.state.response).to.deep.equal([{ id: 1, foo: 'bar' }]);
-      expect(reply).to.deep.equal({ id: 1, foo: 'bar' });
 
       transportLayer.verifyAll();
     });

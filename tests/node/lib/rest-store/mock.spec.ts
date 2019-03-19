@@ -50,15 +50,10 @@ describe('RestStoreMock', () => {
   });
 
   it('should spy on POST requests', async () => {
-    const mock = new RestStoreMock<Foo>();
+    const mock = new RestStoreMock<Bar>();
 
-    mock.post.withArgs({ }).returns(Promise.resolve({
-      id: 1
-    }));
+    await mock.post({ foo: 1 });
 
-    const reply = await mock.post({ });
-
-    expect(mock.post).to.have.been.calledOnce;
-    expect(reply).to.deep.equal({ id: 1 });
+    expect(mock.post.calledWith({ foo: 1 })).to.be.true;
   });
 });

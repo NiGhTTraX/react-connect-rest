@@ -1,5 +1,6 @@
 import { IStateContainer, StateContainer } from 'react-connect-state';
 import HttpClient from './http-client';
+// eslint-disable-next-line no-unused-vars
 import { Omit } from 'react-bind-component';
 
 export type RelationalEntity<T> = {
@@ -31,7 +32,7 @@ type HATEOASMetadata<T> = {
   __links: HATEOASLink<T>[];
 };
 
-type RestData<T> = HATEOASMetadata<T> & {
+export type ZZZ<T> = {
   [P in keyof T]: T[P] extends Array<infer U>
     // Transform to many relations into lists of IDs
     ? U extends { id: infer X } ? X[] : never
@@ -41,6 +42,8 @@ type RestData<T> = HATEOASMetadata<T> & {
       // and leave everything else untouched.
       : T[P];
 };
+
+type RestData<T> = HATEOASMetadata<T> & ZZZ<T>;
 
 export type HATEOASRestResponse<T> = {
   data: T extends Array<infer U> ? RestData<U>[] : RestData<T>;
@@ -55,9 +58,10 @@ export type RestStoreState<T> = {
   response?: RestStoreResponse<T>;
 };
 
+export type PostPayload<T> = Omit<ZZZ<GetEntity<T>>, 'id'>;
+
 export interface IRestStore<T> extends IStateContainer<RestStoreState<T>> {
-  // TODO: the response should be a HATEOASRestResponse.
-  post: (payload: Partial<Omit<GetEntity<T>, 'id'>>) => Promise<GetEntity<T>>;
+  post: (payload: PostPayload<T>) => Promise<void>;
 }
 
 // eslint-disable-next-line max-len
@@ -78,16 +82,14 @@ export default class RestStore<T> extends StateContainer<RestStoreState<T>> impl
     this.fetchData();
   }
 
-  post = async (payload: Partial<Omit<GetEntity<T>, 'id'>>): Promise<GetEntity<T>> => {
-    const reply = await this.transportLayer.post<GetEntity<T>>(
+  post = async (payload: PostPayload<T>) => {
+    await this.transportLayer.post<HATEOASRestResponse<GetEntity<T>>>(
       this.api,
       // @ts-ignore
       payload
     );
 
     await this.fetchData();
-
-    return reply;
   };
 
   private async fetchData() {
