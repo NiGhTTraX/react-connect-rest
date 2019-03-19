@@ -4,7 +4,7 @@ import RestStore, { HATEOASRestResponse } from '../../../../src/lib/rest-store';
 import HttpClient from '../../../../src/lib/http-client';
 
 describe('RestStore', () => {
-  describe('relations', () => {
+  describe('collection relations', () => {
     interface Author {
       id: number;
       name: string;
