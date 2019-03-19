@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { IRestCollectionStore, IRestEntityStore } from './rest';
-import { StateContainer } from 'react-connect-state';
+import { IStateContainer, StateContainer } from 'react-connect-state';
 import HttpClient from './http-client';
 import { Omit } from 'yargs';
 
@@ -53,7 +53,7 @@ type RestStoreState<T> = {
     : T extends { id: any } ? RelationalEntity<T> : never;
 };
 
-interface IRestStore<T> {
+export interface IRestStore<T> extends IStateContainer<RestStoreState<T>> {
   post: (payload: Partial<Omit<GetEntity<T>, 'id'>>) => Promise<GetEntity<T>>;
 }
 
