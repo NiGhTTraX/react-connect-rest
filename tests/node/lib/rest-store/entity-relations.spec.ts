@@ -4,7 +4,7 @@ import RestStore, { HATEOASRestResponse } from '../../../../src/lib/rest-store';
 import HttpClient from '../../../../src/lib/http-client';
 
 describe('RestStore', () => {
-  describe('collection relations', () => {
+  describe('entity relations', () => {
     interface Author {
       id: number;
       name: string;
@@ -20,20 +20,20 @@ describe('RestStore', () => {
       authors: Author[];
     }
 
-    const postsResponse: HATEOASRestResponse<Post[]> = {
-      data: [{
+    const postResponse: HATEOASRestResponse<Post> = {
+      data: {
         __links: [{ rel: 'author', href: ':author-api:' }],
         id: 1,
         author: 1
-      }]
+      }
     };
 
-    const booksResponse: HATEOASRestResponse<Book[]> = {
-      data: [{
+    const bookResponse: HATEOASRestResponse<Book> = {
+      data: {
         __links: [{ rel: 'authors', href: ':author-api:' }],
         id: 1,
         authors: [1]
-      }]
+      }
     };
 
     const authorsResponse: HATEOASRestResponse<Author[]> = {
@@ -56,23 +56,23 @@ describe('RestStore', () => {
       const transportLayer = Mock.ofType<HttpClient>();
 
       transportLayer
-        .setup(x => x.get<HATEOASRestResponse<Author[]>>(':author-api:'))
-        .returns(() => Promise.resolve(authorsResponse))
+        .setup(x => x.get<HATEOASRestResponse<Author>>(':author-api:'))
+        .returns(() => Promise.resolve(authorResponse))
         .verifiable();
 
-      const authorStore = new RestStore<Author[]>(':author-api:', transportLayer.object);
+      const authorStore = new RestStore<Author>(':author-api:', transportLayer.object);
 
       await new Promise(resolve => authorStore.subscribe(resolve));
 
-      expect(authorStore.state.response).to.deep.equal([{ id: 1, name: 'author 1' }]);
+      expect(authorStore.state.response).to.deep.equal({ id: 1, name: 'author 1' });
     });
 
     it('should transform a to many relation into a collection store', async () => {
       const transportLayer = Mock.ofType<HttpClient>();
 
       transportLayer
-        .setup(x => x.get<HATEOASRestResponse<Book[]>>(':book-api:'))
-        .returns(() => Promise.resolve(booksResponse))
+        .setup(x => x.get<HATEOASRestResponse<Book>>(':book-api:'))
+        .returns(() => Promise.resolve(bookResponse))
         .verifiable();
 
       transportLayer
@@ -80,19 +80,17 @@ describe('RestStore', () => {
         .returns(() => Promise.resolve(authorsResponse))
         .verifiable();
 
-      const bookStore = new RestStore<Book[]>(':book-api:', transportLayer.object);
+      const bookStore = new RestStore<Book>(':book-api:', transportLayer.object);
 
       await new Promise(resolve => bookStore.subscribe(resolve));
 
       // @ts-ignore
-      const book = bookStore.state.response[0];
+      const authorsStore = bookStore.state.response.authors;
 
       expect(
-        book.authors,
+        authorsStore,
         'The relation was not transformed'
       ).to.not.deep.equal([1]);
-
-      const authorsStore = book.authors;
 
       expect(authorsStore.state.response[0]).to.deep.equal({ id: 1, name: 'author 1' });
     });
@@ -101,8 +99,8 @@ describe('RestStore', () => {
       const transportLayer = Mock.ofType<HttpClient>();
 
       transportLayer
-        .setup(x => x.get<HATEOASRestResponse<Post[]>>(':post-api:'))
-        .returns(() => Promise.resolve(postsResponse))
+        .setup(x => x.get<HATEOASRestResponse<Post>>(':post-api:'))
+        .returns(() => Promise.resolve(postResponse))
         .verifiable();
 
       transportLayer
@@ -110,19 +108,17 @@ describe('RestStore', () => {
         .returns(() => Promise.resolve(authorResponse))
         .verifiable();
 
-      const postStore = new RestStore<Post[]>(':post-api:', transportLayer.object);
+      const postStore = new RestStore<Post>(':post-api:', transportLayer.object);
 
       await new Promise(resolve => postStore.subscribe(resolve));
 
       // @ts-ignore
-      const post = postStore.state.response[0];
+      const authorStore = postStore.state.response.author;
 
       expect(
-        post.author,
+        authorStore,
         'The relation was not transformed'
       ).to.not.deep.equal(1);
-
-      const authorStore = post.author;
 
       expect(authorStore.state.response).to.deep.equal({ id: 1, name: 'author 1' });
     });
@@ -131,8 +127,8 @@ describe('RestStore', () => {
       const transportLayer = Mock.ofType<HttpClient>();
 
       transportLayer
-        .setup(x => x.get<HATEOASRestResponse<Post[]>>(':post-api:'))
-        .returns(() => Promise.resolve(postsResponse))
+        .setup(x => x.get<HATEOASRestResponse<Post>>(':post-api:'))
+        .returns(() => Promise.resolve(postResponse))
         .verifiable();
 
       let resolveAuthor: (r: HATEOASRestResponse<Author>) => void = () => {};
@@ -142,7 +138,7 @@ describe('RestStore', () => {
         .returns(() => new Promise(resolve => { resolveAuthor = resolve; }))
         .verifiable();
 
-      const postStore = new RestStore<Post[]>(':post-api:', transportLayer.object);
+      const postStore = new RestStore<Post>(':post-api:', transportLayer.object);
 
       // Wait until the post response is fetched.
       await wait(() => transportLayer.verify(x => x.get(':post-api:'), Times.once()));
@@ -153,8 +149,9 @@ describe('RestStore', () => {
         postStore.subscribe(state => {
           if (!state.loading) {
             // @ts-ignore
-            const book = state.response[0];
-            expect(book.author.state.loading).to.be.false;
+            const authorStore = state.response.author;
+
+            expect(authorStore.state.loading).to.be.false;
             resolve();
           }
         });
