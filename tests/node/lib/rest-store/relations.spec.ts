@@ -1,5 +1,5 @@
-import { Mock } from 'typemoq';
-import { describe, expect, it } from '../../suite';
+import { Mock, Times } from 'typemoq';
+import { describe, expect, it, wait } from '../../suite';
 import RestStore, { HATEOASRestResponse } from '../../../../src/lib/rest-store';
 import HttpClient from '../../../../src/lib/http-client';
 
@@ -138,6 +138,69 @@ describe('RestStore', () => {
       const authorStore = post.author;
 
       expect(authorStore.state.response).to.deep.equal({ id: 1, name: 'author 1' });
+    });
+
+    it('should wait for all child stores', async () => {
+      interface Author {
+        id: number;
+        name: string;
+      }
+
+      interface Post {
+        id: number;
+        author: Author;
+      }
+
+      const postResponse: HATEOASRestResponse<Post[]> = {
+        data: [{
+          __links: [{ rel: 'author', href: ':author-api:' }],
+          id: 1,
+          author: 1
+        }]
+      };
+      const authorResponse: HATEOASRestResponse<Author> = {
+        data: {
+          __links: [],
+          id: 1,
+          name: 'author 1'
+        }
+      };
+
+      const transportLayer = Mock.ofType<HttpClient>();
+
+      transportLayer
+        .setup(x => x.get(':post-api:'))
+        .returns(() => Promise.resolve(postResponse))
+        .verifiable();
+
+      let resolveAuthor: (r: HATEOASRestResponse<Author>) => void = () => {};
+
+      transportLayer
+        .setup(x => x.get(':author-api:'))
+        .returns(() => new Promise(resolve => { resolveAuthor = resolve; }))
+        .verifiable();
+
+      const postStore = new RestStore<Post[]>(':post-api:', transportLayer.object);
+
+      // Wait until the post response is fetched.
+      await wait(() => transportLayer.verify(x => x.get(':post-api:'), Times.once()));
+
+      expect(postStore.state.loading).to.be.true;
+
+      const r = new Promise(resolve => {
+        postStore.subscribe(state => {
+          if (!state.loading) {
+            // @ts-ignore
+            const book = state.response[0];
+            expect(book.author.state.loading).to.be.false;
+            resolve();
+          }
+        });
+      });
+
+      resolveAuthor(authorResponse);
+
+      return r;
     });
   });
 });

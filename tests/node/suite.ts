@@ -21,8 +21,10 @@ function getJQueryContainer(): JQuery {
   return $(componentContainer).children().eq(0);
 }
 
-export function wait(cb: ($container: JQuery) => boolean | Chai.Assertion) {
-  return waitPoll(() => cb(getJQueryContainer()), {
+export function wait(cb: ($container: JQuery) => boolean | Chai.Assertion | void) {
+  return waitPoll(() => {
+    expect(() => cb(getJQueryContainer())).to.not.throw;
+  }, {
     timeout: 1500
   });
 }

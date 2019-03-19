@@ -93,10 +93,10 @@ export default class RestStore<T> extends StateContainer<RestStoreState<T>> impl
     let expandedResponse;
 
     if (Array.isArray(response.data)) {
-      expandedResponse = response.data.map(this.expandLinks);
+      expandedResponse = await Promise.all(response.data.map(this.expandLinks));
     } else {
       // @ts-ignore
-      expandedResponse = this.expandLinks(response.data);
+      expandedResponse = await this.expandLinks(response.data);
     }
 
     this.setState({
@@ -106,14 +106,29 @@ export default class RestStore<T> extends StateContainer<RestStoreState<T>> impl
     });
   }
 
-  private expandLinks = (entity: RestData<T>): RelationalEntity<T> => {
-    const stores = entity.__links.reduce((acc, link) => ({
+  private expandLinks = async (entity: RestData<T>): Promise<RelationalEntity<T>> => {
+    const stores: Record<string, RestStore<any>> = entity.__links.reduce((acc, link) => ({
       ...acc,
       [link.rel]: new RestStore(
         link.href,
         this.transportLayer
       )
     }), {});
+
+    // Wait for all the stores to finish loading.
+    await Promise.all(
+      Object.values(stores).map(store => new Promise(resolve => {
+        // Fetching data is asynchronous (and so is pushing notifications)
+        // so it should be guaranteed that the loading flag will toggle
+        // in the next tick at the earliest meaning that we don't need
+        // to check if it has toggled right after store creation.
+        store.subscribe(state => {
+          if (!state.loading) {
+            resolve();
+          }
+        });
+      }))
+    );
 
     const result = {
       ...entity,
