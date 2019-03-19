@@ -103,11 +103,11 @@ ReactDOM.render(<div>
 
 You can create stores with mocked data for use in tests:
 
-```tsx
-import { RestCollectionStoreMock } from 'react-connect-rest';
+```typescript jsx
+import { RestStoreMock } from 'react-connect-rest';
 
-const mock = new RestCollectionStoreMock<number>([1, 2, 3]);
+const mock = new RestStoreMock<number[]>([1, 2, 3]);
 
-mock.state.loading === false
-mock.state.response[0] === 1
+console.log(mock.state.loading); // false
+console.log(mock.state.response); // [1, 2, 3]
 ```

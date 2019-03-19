@@ -2,13 +2,13 @@ import { IStateContainer, StateContainer } from 'react-connect-state';
 import HttpClient from './http-client';
 import { Omit } from 'react-bind-component';
 
-type RelationalEntity<T> = {
+export type RelationalEntity<T> = {
   [P in keyof T]: T[P] extends Array<infer U>
     ? U extends { id: any } ? IRestStore<U[]> : never
-    : T[P] extends { id: any } ? IRestStore<T[P]> : never;
+    : T[P] extends { id: any } ? IRestStore<T[P]> : T[P];
 };
 
-type GetEntity<T> = T extends Array<infer U>
+export type GetEntity<T> = T extends Array<infer U>
   ? U extends { id: any } ? U : never
   : T extends { id : any } ? T : never;
 
@@ -46,14 +46,17 @@ export type HATEOASRestResponse<T> = {
   data: T extends Array<infer U> ? RestData<U>[] : RestData<T>;
 };
 
-type RestStoreState<T> = {
+export type RestStoreResponse<T> = T extends Array<infer U>
+  ? U extends { id: any } ? RelationalEntity<U>[] : never
+  : T extends { id: any } ? RelationalEntity<T> : never;
+
+export type RestStoreState<T> = {
   loading: boolean;
-  response?: T extends Array<infer U>
-    ? U extends { id: any } ? RelationalEntity<U>[] : never
-    : T extends { id: any } ? RelationalEntity<T> : never;
+  response?: RestStoreResponse<T>;
 };
 
 export interface IRestStore<T> extends IStateContainer<RestStoreState<T>> {
+  // TODO: the response should be a HATEOASRestResponse.
   post: (payload: Partial<Omit<GetEntity<T>, 'id'>>) => Promise<GetEntity<T>>;
 }
 
