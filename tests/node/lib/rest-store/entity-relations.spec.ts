@@ -92,7 +92,7 @@ describe('RestStore', () => {
         'The relation was not transformed'
       ).to.not.deep.equal([1]);
 
-      expect(authorsStore.state.response[0]).to.deep.equal({ id: 1, name: 'author 1' });
+      expect(authorsStore.state.response).to.deep.equal([{ id: 1, name: 'author 1' }]);
     });
 
     it('should transform a to single relation into an entity store', async () => {

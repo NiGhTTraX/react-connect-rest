@@ -1,16 +1,16 @@
-/* eslint-disable no-unused-vars */
-import { IRestCollectionStore, IRestEntityStore } from './rest';
 import { IStateContainer, StateContainer } from 'react-connect-state';
 import HttpClient from './http-client';
-import { Omit } from 'yargs';
+import { Omit } from 'react-bind-component';
 
 type RelationalEntity<T> = {
   [P in keyof T]: T[P] extends Array<infer U>
-    ? U extends { id: any } ? IRestCollectionStore<U> : never
-    : T[P] extends { id: any } ? IRestEntityStore<T[P]> : never;
+    ? U extends { id: any } ? IRestStore<U[]> : never
+    : T[P] extends { id: any } ? IRestStore<T[P]> : never;
 };
 
-type GetEntity<T> = T extends Array<infer U> ? U : T;
+type GetEntity<T> = T extends Array<infer U>
+  ? U extends { id: any } ? U : never
+  : T extends { id : any } ? T : never;
 
 type ToManyRelations<T, U = GetEntity<T>> = {
   [P in keyof U]: U[P] extends Array<infer U>
