@@ -1,13 +1,17 @@
-import HttpClient from './http-client';
+/* eslint-disable class-methods-use-this */
+import HttpRestClient, {
+  GetModel,
+  RestResponse,
+  PostPayload
+} from './http-rest-client';
 
-const FetchClient: HttpClient = {
+const FetchClient: HttpRestClient = {
   get<T>(path: string) {
-    // @ts-ignore
-    return fetch(path).then(resp => resp.json() as T);
+    return fetch(path).then(resp => resp.json() as unknown as RestResponse<T>);
   },
 
-  post<T>(path: string, body: Partial<T>) {
-    return doFetchWithBody(path, body, 'POST');
+  post<T>(path: string, body: PostPayload<T>) {
+    return doFetchWithBody<RestResponse<GetModel<T>>>(path, body, 'POST');
   },
 
   patch<T>(path: string, body: Partial<T>): Promise<T> {
@@ -19,7 +23,7 @@ const FetchClient: HttpClient = {
   }
 };
 
-function doFetchWithBody<T>(path: string, body: Partial<T>, method: string) {
+function doFetchWithBody<R>(path: string, body: any, method: string) {
   return fetch(path, {
     method,
     headers: {
@@ -27,7 +31,7 @@ function doFetchWithBody<T>(path: string, body: Partial<T>, method: string) {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify(body)
-  }).then(resp => resp.json() as unknown as T);
+  }).then(resp => resp.json() as unknown as R);
 }
 
 export default FetchClient;

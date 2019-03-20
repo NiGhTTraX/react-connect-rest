@@ -1,64 +1,21 @@
 import { IStateContainer, StateContainer } from 'react-connect-state';
-import HttpClient from './http-client';
 // eslint-disable-next-line no-unused-vars
-import { Omit } from 'react-bind-component';
+import HttpRestClient, { PostPayload, RestData } from './http-rest-client';
 
-export type RelationalEntity<T> = {
+type ExpandedEntity<T> = {
   [P in keyof T]: T[P] extends Array<infer U>
     ? U extends { id: any } ? IRestStore<U[]> : never
     : T[P] extends { id: any } ? IRestStore<T[P]> : T[P];
 };
 
-export type GetEntity<T> = T extends Array<infer U>
-  ? U extends { id: any } ? U : never
-  : T extends { id : any } ? T : never;
-
-type ToManyRelations<T, U = GetEntity<T>> = {
-  [P in keyof U]: U[P] extends Array<infer U>
-    ? U extends { id: any } ? P : never
-    : never
-}[keyof U];
-
-type ToSingleRelations<T, U = GetEntity<T>> = {
-  [P in keyof U]: U[P] extends { id: any } ? P : never
-}[keyof U];
-
-type HATEOASLink<T> = {
-  href: string;
-  rel: ToManyRelations<T> | ToSingleRelations<T>;
-};
-
-type HATEOASMetadata<T> = {
-  __links: HATEOASLink<T>[];
-};
-
-export type ZZZ<T> = {
-  [P in keyof T]: T[P] extends Array<infer U>
-    // Transform to many relations into lists of IDs
-    ? U extends { id: infer X } ? X[] : never
-    : T[P] extends { id: infer Y }
-      // and to single relations into IDs
-      ? Y
-      // and leave everything else untouched.
-      : T[P];
-};
-
-type RestData<T> = HATEOASMetadata<T> & ZZZ<T>;
-
-export type HATEOASRestResponse<T> = {
-  data: T extends Array<infer U> ? RestData<U>[] : RestData<T>;
-};
-
 export type RestStoreResponse<T> = T extends Array<infer U>
-  ? U extends { id: any } ? RelationalEntity<U>[] : never
-  : T extends { id: any } ? RelationalEntity<T> : never;
+  ? U extends { id: any } ? ExpandedEntity<U>[] : never
+  : T extends { id: any } ? ExpandedEntity<T> : never;
 
 export type RestStoreState<T> = {
   loading: boolean;
   response?: RestStoreResponse<T>;
 };
-
-export type PostPayload<T> = Omit<ZZZ<GetEntity<T>>, 'id'>;
 
 export interface IRestStore<T> extends IStateContainer<RestStoreState<T>> {
   post: (payload: PostPayload<T>) => Promise<void>;
@@ -66,14 +23,14 @@ export interface IRestStore<T> extends IStateContainer<RestStoreState<T>> {
 
 // eslint-disable-next-line max-len
 export default class RestStore<T> extends StateContainer<RestStoreState<T>> implements IRestStore<T> {
-  private readonly transportLayer: HttpClient;
+  private readonly restClient: HttpRestClient;
 
   private readonly api: string;
 
-  constructor(api: string, transportLayer: HttpClient) {
+  constructor(api: string, restClient: HttpRestClient) {
     super();
     this.api = api;
-    this.transportLayer = transportLayer;
+    this.restClient = restClient;
 
     this.state = {
       loading: true
@@ -83,7 +40,7 @@ export default class RestStore<T> extends StateContainer<RestStoreState<T>> impl
   }
 
   post = async (payload: PostPayload<T>) => {
-    await this.transportLayer.post<HATEOASRestResponse<GetEntity<T>>>(
+    await this.restClient.post<T>(
       this.api,
       // @ts-ignore
       payload
@@ -93,7 +50,7 @@ export default class RestStore<T> extends StateContainer<RestStoreState<T>> impl
   };
 
   private async fetchData() {
-    const response = await this.transportLayer.get<HATEOASRestResponse<T>>(this.api);
+    const response = await this.restClient.get<T>(this.api);
 
     let expandedResponse;
 
@@ -111,12 +68,12 @@ export default class RestStore<T> extends StateContainer<RestStoreState<T>> impl
     });
   }
 
-  private expandLinks = async (entity: RestData<T>): Promise<RelationalEntity<T>> => {
+  private expandLinks = async (entity: RestData<T>): Promise<ExpandedEntity<T>> => {
     const stores: Record<string, RestStore<any>> = entity.__links.reduce((acc, link) => ({
       ...acc,
       [link.rel]: new RestStore(
         link.href,
-        this.transportLayer
+        this.restClient
       )
     }), {});
 

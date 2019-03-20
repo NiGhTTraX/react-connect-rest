@@ -1,11 +1,7 @@
 import { StateContainer } from 'react-connect-state';
 import { spy } from 'sinon';
-import {
-  IRestStore,
-  RestStoreResponse,
-  RestStoreState,
-  PostPayload
-} from './rest-store';
+import { IRestStore, RestStoreResponse, RestStoreState } from './rest-store';
+import { PostPayload } from './http-rest-client';
 
 // eslint-disable-next-line max-len
 export default class RestStoreMock<T> extends StateContainer<RestStoreState<T>> implements IRestStore<T> {

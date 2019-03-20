@@ -2,9 +2,10 @@ import React from 'react';
 import createReactMock from 'react-mock-component';
 import fetchMock from 'fetch-mock';
 import { Mock } from 'typemoq';
-import { describe, it, afterEach, beforeEach, expect, wait, $render } from './suite';
+import { $render, afterEach, beforeEach, describe, expect, it, wait } from './suite';
 import connectToRest from '../../src/connect';
-import { HATEOASRestResponse, IRestStore } from '../../src/lib/rest-store';
+import { IRestStore } from '../../src/lib/rest-store';
+import { RestResponse } from '../../src/lib/http-rest-client';
 
 describe('connectToRest', () => {
   interface Foo {
@@ -15,7 +16,7 @@ describe('connectToRest', () => {
     container: IRestStore<Foo>
   }
 
-  const response: HATEOASRestResponse<Foo[]> = {
+  const response: RestResponse<Foo[]> = {
     data: [{
       __links: [],
       id: 1

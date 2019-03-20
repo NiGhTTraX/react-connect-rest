@@ -1,7 +1,7 @@
-import { describe, it, expect } from '../../suite';
+import { describe, expect, it } from '../../suite';
 import { It, Mock, Times } from 'typemoq';
-import HttpClient from '../../../../src/lib/http-client';
-import RestStore, { HATEOASRestResponse } from '../../../../src/lib/rest-store';
+import HttpRestClient, { RestResponse } from '../../../../src/lib/http-rest-client';
+import RestStore from '../../../../src/lib/rest-store';
 
 describe('RestStore', () => {
   describe('collection requests', () => {
@@ -11,46 +11,46 @@ describe('RestStore', () => {
     }
 
     it('should make a GET request when created', () => {
-      const transportLayer = Mock.ofType<HttpClient>();
-      transportLayer
-        .setup(x => x.get<HATEOASRestResponse<Foo[]>>(':api:'))
+      const restClient = Mock.ofType<HttpRestClient>();
+      restClient
+        .setup(x => x.get<Foo[]>(':api:'))
         .returns(() => new Promise(() => {}))
         .verifiable(Times.once());
 
       // eslint-disable-next-line no-new
-      new RestStore<Foo[]>(':api:', transportLayer.object);
+      new RestStore<Foo[]>(':api:', restClient.object);
 
-      transportLayer.verifyAll();
+      restClient.verifyAll();
     });
 
     it('should have an initial state', () => {
-      const transportLayer = Mock.ofType<HttpClient>();
-      transportLayer
-        .setup(x => x.get<HATEOASRestResponse<Foo[]>>(It.isAny()))
+      const restClient = Mock.ofType<HttpRestClient>();
+      restClient
+        .setup(x => x.get<Foo[]>(It.isAny()))
         .returns(() => new Promise(() => {}))
         .verifiable();
 
-      const store = new RestStore<Foo[]>(':irrelevant:', transportLayer.object);
+      const store = new RestStore<Foo[]>(':irrelevant:', restClient.object);
 
       expect(store.state.loading).to.be.true;
       expect(store.state.response).to.be.undefined;
     });
 
     it('should store the GET response', async () => {
-      const response: HATEOASRestResponse<Foo[]> = {
+      const response: RestResponse<Foo[]> = {
         data: [
           { __links: [], id: 1, foo: 'bar' },
           { __links: [], id: 2, foo: 'baz' }
         ]
       };
 
-      const transportLayer = Mock.ofType<HttpClient>();
-      transportLayer
-        .setup(x => x.get<HATEOASRestResponse<Foo[]>>(':api:'))
+      const restClient = Mock.ofType<HttpRestClient>();
+      restClient
+        .setup(x => x.get<Foo[]>(':api:'))
         .returns(() => Promise.resolve(response))
         .verifiable();
 
-      const store = new RestStore<Foo[]>(':api:', transportLayer.object);
+      const store = new RestStore<Foo[]>(':api:', restClient.object);
 
       await new Promise(resolve => store.subscribe(resolve));
 
@@ -60,30 +60,30 @@ describe('RestStore', () => {
         { id: 2, foo: 'baz' }
       ]);
 
-      transportLayer.verifyAll();
+      restClient.verifyAll();
     });
 
     it('should make a POST request', async () => {
-      const transportLayer = Mock.ofType<HttpClient>();
-      transportLayer
-        .setup(x => x.get<HATEOASRestResponse<Foo[]>>(':api:'))
+      const restClient = Mock.ofType<HttpRestClient>();
+      restClient
+        .setup(x => x.get<Foo[]>(':api:'))
         .returns(() => Promise.resolve({ data: [] }));
 
-      const store = new RestStore<Foo[]>(':api:', transportLayer.object);
+      const store = new RestStore<Foo[]>(':api:', restClient.object);
 
-      const getResponse: HATEOASRestResponse<Foo[]> = {
+      const getResponse: RestResponse<Foo[]> = {
         data: [
           { __links: [], id: 1, foo: 'bar' }
         ]
       };
 
-      transportLayer
-        .setup(x => x.post(':api:', { foo: 'bar' }))
+      restClient
+        .setup(x => x.post<Foo[]>(':api:', { foo: 'bar' }))
         .returns(() => Promise.resolve({ data: { __links: [], id: 1, foo: 'bar' } }))
         .verifiable();
 
-      transportLayer
-        .setup(x => x.get<HATEOASRestResponse<Foo[]>>(':api:'))
+      restClient
+        .setup(x => x.get<Foo[]>(':api:'))
         .returns(() => Promise.resolve(getResponse));
 
       await store.post({ foo: 'bar' });
@@ -91,7 +91,7 @@ describe('RestStore', () => {
       expect(store.state.loading).to.be.false;
       expect(store.state.response).to.deep.equal([{ id: 1, foo: 'bar' }]);
 
-      transportLayer.verifyAll();
+      restClient.verifyAll();
     });
   });
 });

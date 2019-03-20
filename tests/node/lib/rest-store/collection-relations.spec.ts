@@ -1,7 +1,7 @@
 import { Mock, Times } from 'typemoq';
 import { describe, expect, it, wait } from '../../suite';
-import RestStore, { HATEOASRestResponse } from '../../../../src/lib/rest-store';
-import HttpClient from '../../../../src/lib/http-client';
+import RestStore from '../../../../src/lib/rest-store';
+import HttpRestClient, { RestResponse } from '../../../../src/lib/http-rest-client';
 
 describe('RestStore', () => {
   describe('collection relations', () => {
@@ -20,7 +20,7 @@ describe('RestStore', () => {
       authors: Author[];
     }
 
-    const postsResponse: HATEOASRestResponse<Post[]> = {
+    const postsResponse: RestResponse<Post[]> = {
       data: [{
         __links: [{ rel: 'author', href: ':author-api:' }],
         id: 1,
@@ -28,7 +28,7 @@ describe('RestStore', () => {
       }]
     };
 
-    const booksResponse: HATEOASRestResponse<Book[]> = {
+    const booksResponse: RestResponse<Book[]> = {
       data: [{
         __links: [{ rel: 'authors', href: ':author-api:' }],
         id: 1,
@@ -36,7 +36,7 @@ describe('RestStore', () => {
       }]
     };
 
-    const authorsResponse: HATEOASRestResponse<Author[]> = {
+    const authorsResponse: RestResponse<Author[]> = {
       data: [{
         __links: [],
         id: 1,
@@ -44,7 +44,7 @@ describe('RestStore', () => {
       }]
     };
 
-    const authorResponse: HATEOASRestResponse<Author> = {
+    const authorResponse: RestResponse<Author> = {
       data: {
         __links: [],
         id: 1,
@@ -53,14 +53,14 @@ describe('RestStore', () => {
     };
 
     it('should leave primitives alone', async () => {
-      const transportLayer = Mock.ofType<HttpClient>();
+      const restClient = Mock.ofType<HttpRestClient>();
 
-      transportLayer
-        .setup(x => x.get<HATEOASRestResponse<Author[]>>(':author-api:'))
+      restClient
+        .setup(x => x.get<Author[]>(':author-api:'))
         .returns(() => Promise.resolve(authorsResponse))
         .verifiable();
 
-      const authorStore = new RestStore<Author[]>(':author-api:', transportLayer.object);
+      const authorStore = new RestStore<Author[]>(':author-api:', restClient.object);
 
       await new Promise(resolve => authorStore.subscribe(resolve));
 
@@ -68,19 +68,19 @@ describe('RestStore', () => {
     });
 
     it('should transform a to many relation into a collection store', async () => {
-      const transportLayer = Mock.ofType<HttpClient>();
+      const restClient = Mock.ofType<HttpRestClient>();
 
-      transportLayer
-        .setup(x => x.get<HATEOASRestResponse<Book[]>>(':book-api:'))
+      restClient
+        .setup(x => x.get<Book[]>(':book-api:'))
         .returns(() => Promise.resolve(booksResponse))
         .verifiable();
 
-      transportLayer
-        .setup(x => x.get<HATEOASRestResponse<Author[]>>(':author-api:'))
+      restClient
+        .setup(x => x.get<Author[]>(':author-api:'))
         .returns(() => Promise.resolve(authorsResponse))
         .verifiable();
 
-      const bookStore = new RestStore<Book[]>(':book-api:', transportLayer.object);
+      const bookStore = new RestStore<Book[]>(':book-api:', restClient.object);
 
       await new Promise(resolve => bookStore.subscribe(resolve));
 
@@ -98,19 +98,19 @@ describe('RestStore', () => {
     });
 
     it('should transform a to single relation into an entity store', async () => {
-      const transportLayer = Mock.ofType<HttpClient>();
+      const restClient = Mock.ofType<HttpRestClient>();
 
-      transportLayer
-        .setup(x => x.get<HATEOASRestResponse<Post[]>>(':post-api:'))
+      restClient
+        .setup(x => x.get<Post[]>(':post-api:'))
         .returns(() => Promise.resolve(postsResponse))
         .verifiable();
 
-      transportLayer
-        .setup(x => x.get<HATEOASRestResponse<Author>>(':author-api:'))
+      restClient
+        .setup(x => x.get<Author>(':author-api:'))
         .returns(() => Promise.resolve(authorResponse))
         .verifiable();
 
-      const postStore = new RestStore<Post[]>(':post-api:', transportLayer.object);
+      const postStore = new RestStore<Post[]>(':post-api:', restClient.object);
 
       await new Promise(resolve => postStore.subscribe(resolve));
 
@@ -128,24 +128,24 @@ describe('RestStore', () => {
     });
 
     it('should wait for all child stores', async () => {
-      const transportLayer = Mock.ofType<HttpClient>();
+      const restClient = Mock.ofType<HttpRestClient>();
 
-      transportLayer
-        .setup(x => x.get<HATEOASRestResponse<Post[]>>(':post-api:'))
+      restClient
+        .setup(x => x.get<Post[]>(':post-api:'))
         .returns(() => Promise.resolve(postsResponse))
         .verifiable();
 
-      let resolveAuthor: (r: HATEOASRestResponse<Author>) => void = () => {};
+      let resolveAuthor: (r: RestResponse<Author>) => void = () => {};
 
-      transportLayer
-        .setup(x => x.get<HATEOASRestResponse<Author>>(':author-api:'))
+      restClient
+        .setup(x => x.get<Author>(':author-api:'))
         .returns(() => new Promise(resolve => { resolveAuthor = resolve; }))
         .verifiable();
 
-      const postStore = new RestStore<Post[]>(':post-api:', transportLayer.object);
+      const postStore = new RestStore<Post[]>(':post-api:', restClient.object);
 
       // Wait until the post response is fetched.
-      await wait(() => transportLayer.verify(x => x.get(':post-api:'), Times.once()));
+      await wait(() => restClient.verify(x => x.get(':post-api:'), Times.once()));
 
       expect(postStore.state.loading).to.be.true;
 
