@@ -49,6 +49,12 @@ export type PatchPayload<T> = T extends Array<infer U>
   ? U extends { id: any } ? Pick<U, 'id'> & Partial<Omit<U, 'id'>> : never
   : T extends { id : any } ? Partial<T> : never;
 
+// If the DELETE is done on a collection then the entity needs to
+// be identified by its ID, otherwise the payload should be empty.
+export type DeletePayload<T> = T extends Array<infer U>
+  ? U extends { id: any } ? Pick<U, 'id'> : never
+  : never;
+
 export default interface HttpRestClient {
   get<T>(path: string): Promise<RestResponse<T>>;
 
@@ -56,5 +62,6 @@ export default interface HttpRestClient {
 
   patch<T>(path: string, body: PatchPayload<T>): Promise<RestResponse<GetModel<T>>>;
 
-  delete<T>(path: string, body: Partial<T>): void;
+  delete<T>(path: string, body: DeletePayload<T>): Promise<void>;
+  delete<T>(path: string): Promise<void>;
 }

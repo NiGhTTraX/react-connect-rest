@@ -63,12 +63,12 @@ describe('FetchClient', () => {
     expect(await FetchClient.patch<T>('/api/', { foo: 'bar' })).to.deep.equal(response);
   });
 
-  it('should make a DELETE request', async () => {
+  it('should make a DELETE request on a collection', async () => {
     const response = { id: 1, foo: 'bar' };
     type T = { id: number, foo: string };
 
     fetchMock.delete(
-      (url, opts) => url === '/api/' && opts.body === JSON.stringify({ foo: 'bar' }),
+      (url, opts) => url === '/api/' && opts.body === JSON.stringify({ id: 1 }),
       response,
       {
         headers: {
@@ -78,6 +78,23 @@ describe('FetchClient', () => {
       }
     );
 
-    expect(await FetchClient.delete<T>('/api/', { foo: 'bar' })).to.be.undefined;
+    expect(await FetchClient.delete<T[]>('/api/', { id: 1 })).to.be.undefined;
+  });
+
+  it('should make a DELETE request on an entity', async () => {
+    type T = { id: number, foo: string };
+
+    fetchMock.delete(
+      (url, opts) => url === '/api/' && !opts.body,
+      {},
+      {
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+
+    expect(await FetchClient.delete<T>('/api/')).to.be.undefined;
   });
 });

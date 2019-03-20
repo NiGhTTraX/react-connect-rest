@@ -66,4 +66,22 @@ describe('RestStoreMock', () => {
 
     expect(mock.patch).to.have.been.calledWith({ id: 2 });
   });
+
+  it('should spy on DELETE requests on collections', async () => {
+    const mock = new RestStoreMock<Foo[]>();
+    mock.delete.withArgs({ id: 2 }).returns(Promise.resolve());
+
+    await mock.delete({ id: 2 });
+
+    expect(mock.delete).to.have.been.calledWith({ id: 2 });
+  });
+
+  it('should spy on DELETE requests on entities', async () => {
+    const mock = new RestStoreMock<Foo>();
+    mock.delete.withArgs({ id: 2 }).returns(Promise.resolve());
+
+    await mock.delete();
+
+    expect(mock.delete).to.have.been.called;
+  });
 });

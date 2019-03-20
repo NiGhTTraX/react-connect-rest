@@ -2,7 +2,7 @@
 import HttpRestClient, {
   GetModel,
   RestResponse,
-  PostPayload, PatchPayload
+  PostPayload, PatchPayload, DeletePayload
 } from './http-rest-client';
 
 const FetchClient: HttpRestClient = {
@@ -18,7 +18,7 @@ const FetchClient: HttpRestClient = {
     return doFetchWithBody<RestResponse<GetModel<T>>>(path, body, 'PATCH');
   },
 
-  async delete<T>(path: string, body: Partial<T>): Promise<void> {
+  async delete<T>(path: string, body?: DeletePayload<T>): Promise<void> {
     await doFetchWithBody(path, body, 'DELETE');
   }
 };

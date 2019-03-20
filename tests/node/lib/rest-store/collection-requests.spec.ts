@@ -127,5 +127,37 @@ describe('RestStore', () => {
 
       restClient.verifyAll();
     });
+
+    it('should make a DELETE request', async () => {
+      const restClient = Mock.ofType<HttpRestClient>();
+      restClient
+        .setup(x => x.get<Foo[]>(':api:'))
+        .returns(() => Promise.resolve({
+          data: [
+            { __links: [], id: 1, foo: 'bar' }
+          ]
+        }));
+
+      const store = new RestStore<Foo[]>(':api:', restClient.object);
+      await new Promise(resolve => store.subscribe(resolve));
+
+      restClient
+        .setup(x => x.delete<Foo[]>(':api:', { id: 1 }))
+        .returns(() => Promise.resolve())
+        .verifiable();
+
+      restClient
+        .setup(x => x.get<Foo[]>(':api:'))
+        .returns(() => Promise.resolve({
+          data: []
+        }));
+
+      await store.delete({ id: 1 });
+
+      expect(store.state.loading).to.be.false;
+      expect(store.state.response).to.deep.equal([]);
+
+      restClient.verifyAll();
+    });
   });
 });
