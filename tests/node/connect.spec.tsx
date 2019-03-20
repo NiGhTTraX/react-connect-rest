@@ -36,7 +36,7 @@ describe('connectToRest', () => {
 
   it('should connect the view to a fresh state container', async () => {
     const View = createReactMock<ViewProps>();
-    const ConnectedView = connectToRest(View, '/api/', 'container');
+    const ConnectedView = connectToRest(View, { container: '/api/' });
 
     $render(<ConnectedView />);
 
@@ -48,8 +48,8 @@ describe('connectToRest', () => {
 
   it('should connect the view to the given state container', async () => {
     const View = createReactMock<ViewProps>();
-    const container = Mock.ofType<IRestStore<any>>();
-    const ConnectedView = connectToRest(View, container.object, 'container');
+    const container = Mock.ofType<IRestStore<Foo>>();
+    const ConnectedView = connectToRest(View, { container: container.object });
 
     $render(<ConnectedView />);
 

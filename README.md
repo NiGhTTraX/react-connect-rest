@@ -28,11 +28,7 @@ const MyView = ({ myData }: MyViewProps) => <div>
   </p>}
 </div>;
 
-// All 3 types need to be specified until
-// https://github.com/Microsoft/TypeScript/issues/10571 is implemented.
-const ConnectedView = connectToRest<MyViewProps, Foo, 'myData'>(
-  MyView, '/my/api/', 'myData'
-);
+const ConnectedView = connectToRest(MyView, { myData: '/my/api/' });
 
 render(<ConnectedView />);
 ```
@@ -104,8 +100,8 @@ const MyView2 = ({ container }: MyViewProps) => null;
 
 // We'll have a single container querying the API and multiple
 // views listening to it.
-const ConnectedView1 = connectToRest(MyView1, container, 'container');
-const ConnectedView2 = connectToRest(MyView2, container, 'container');
+const ConnectedView1 = connectToRest(MyView1, { container });
+const ConnectedView2 = connectToRest(MyView2, { container });
 
 render(<div>
   <ConnectedView1 />
