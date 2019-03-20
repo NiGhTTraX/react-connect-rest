@@ -57,4 +57,13 @@ describe('RestStoreMock', () => {
 
     expect(mock.post).to.have.been.calledWith({ foo: 1 });
   });
+
+  it('should spy on PATCH requests', async () => {
+    const mock = new RestStoreMock<Foo>();
+    mock.patch.withArgs({ id: 2 }).returns(Promise.resolve());
+
+    await mock.patch({ id: 2 });
+
+    expect(mock.patch).to.have.been.calledWith({ id: 2 });
+  });
 });

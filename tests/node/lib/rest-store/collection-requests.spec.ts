@@ -93,5 +93,38 @@ describe('RestStore', () => {
 
       restClient.verifyAll();
     });
+
+    it('should make a PATCH request', async () => {
+      const restClient = Mock.ofType<HttpRestClient>();
+      restClient
+        .setup(x => x.get<Foo[]>(':api:'))
+        .returns(() => Promise.resolve({
+          data: [
+            { __links: [], id: 1, foo: 'bar' }
+          ]
+        }));
+
+      const store = new RestStore<Foo[]>(':api:', restClient.object);
+
+      restClient
+        .setup(x => x.patch<Foo[]>(':api:', { id: 1, foo: 'baz' }))
+        .returns(() => Promise.resolve({ data: { __links: [], id: 1, foo: 'baz' } }))
+        .verifiable();
+
+      restClient
+        .setup(x => x.get<Foo[]>(':api:'))
+        .returns(() => Promise.resolve({
+          data: [{
+            __links: [], id: 1, foo: 'baz'
+          }]
+        }));
+
+      await store.patch({ id: 1, foo: 'baz' });
+
+      expect(store.state.loading).to.be.false;
+      expect(store.state.response).to.deep.equal([{ id: 1, foo: 'baz' }]);
+
+      restClient.verifyAll();
+    });
   });
 });

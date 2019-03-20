@@ -43,12 +43,18 @@ export type RestResponse<T> = {
 
 export type PostPayload<T> = Omit<RestModel<GetModel<T>>, 'id'>;
 
+// If the PATCH is done on a collection then the entity needs to
+// be identified by its ID, otherwise it can be omitted.
+export type PatchPayload<T> = T extends Array<infer U>
+  ? U extends { id: any } ? Pick<U, 'id'> & Partial<Omit<U, 'id'>> : never
+  : T extends { id : any } ? Partial<T> : never;
+
 export default interface HttpRestClient {
   get<T>(path: string): Promise<RestResponse<T>>;
 
   post<T>(path: string, body: PostPayload<T>): Promise<RestResponse<GetModel<T>>>;
 
-  patch<T>(path: string, body: Partial<T>): Promise<T>;
+  patch<T>(path: string, body: PatchPayload<T>): Promise<RestResponse<GetModel<T>>>;
 
   delete<T>(path: string, body: Partial<T>): void;
 }

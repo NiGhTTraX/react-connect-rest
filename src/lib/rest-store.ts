@@ -1,6 +1,6 @@
 import { IStateContainer, StateContainer } from 'react-connect-state';
 // eslint-disable-next-line no-unused-vars
-import HttpRestClient, { PostPayload, RestData } from './http-rest-client';
+import HttpRestClient, { PatchPayload, PostPayload, RestData } from './http-rest-client';
 
 type ExpandedEntity<T> = {
   [P in keyof T]: T[P] extends Array<infer U>
@@ -19,6 +19,8 @@ export type RestStoreState<T> = {
 
 export interface IRestStore<T> extends IStateContainer<RestStoreState<T>> {
   post: (payload: PostPayload<T>) => Promise<void>;
+
+  patch: (payload: PatchPayload<T>) => Promise<void>;
 }
 
 // eslint-disable-next-line max-len
@@ -40,11 +42,13 @@ export default class RestStore<T> extends StateContainer<RestStoreState<T>> impl
   }
 
   post = async (payload: PostPayload<T>) => {
-    await this.restClient.post<T>(
-      this.api,
-      // @ts-ignore
-      payload
-    );
+    await this.restClient.post<T>(this.api, payload);
+
+    await this.fetchData();
+  };
+
+  patch = async (payload: PatchPayload<T>) => {
+    await this.restClient.patch<T>(this.api, payload);
 
     await this.fetchData();
   };

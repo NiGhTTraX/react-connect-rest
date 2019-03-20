@@ -27,7 +27,25 @@ describe('FetchClient', () => {
     expect(await FetchClient.post<T>('/api/', { foo: 'bar' })).to.deep.equal(response);
   });
 
-  it('should make a PATCH request', async () => {
+  it('should make a PATCH request for a collection', async () => {
+    const response = { id: 1, foo: 'bar' };
+    type T = { id: number, foo: string };
+
+    fetchMock.patch(
+      (url, opts) => url === '/api/' && opts.body === JSON.stringify({ id: 1, foo: 'bar' }),
+      response,
+      {
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+
+    expect(await FetchClient.patch<T[]>('/api/', { id: 1, foo: 'bar' })).to.deep.equal(response);
+  });
+
+  it('should make a PATCH request for an entity', async () => {
     const response = { id: 1, foo: 'bar' };
     type T = { id: number, foo: string };
 
