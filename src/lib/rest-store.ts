@@ -52,7 +52,10 @@ export default class RestStore<T> extends StateContainer<RestStoreState<T>> impl
   post = async (payload: PostPayload<T>) => {
     await this.restClient.post<T>(this.api, payload);
 
-    await this.fetchData();
+    // TODO: should we allow POSTs on entities?
+    if (Array.isArray(this.state.response)) {
+      await this.fetchData();
+    }
   };
 
   patch = async (payload: PatchPayload<T>) => {
@@ -62,13 +65,19 @@ export default class RestStore<T> extends StateContainer<RestStoreState<T>> impl
   };
 
   delete = async (payload?: DeletePayload<T>) => {
-    await this.restClient.delete<T>(
-      this.api,
-      // @ts-ignore
-      payload
-    );
+    if (typeof payload !== 'undefined') {
+      await this.restClient.delete<T>(this.api, payload);
 
-    await this.fetchData();
+      await this.fetchData();
+    } else {
+      await this.restClient.delete<T>(this.api);
+
+      // TODO: the store is basically invalid now; should we allow DELETEs
+      // on entities?
+      this.setState({
+        response: undefined
+      });
+    }
   };
 
   private async fetchData() {

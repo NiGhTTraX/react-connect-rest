@@ -60,6 +60,8 @@ export default interface HttpRestClient {
 
   post<T>(path: string, body: PostPayload<T>): Promise<RestResponse<GetModel<T>>>;
 
+  // TODO: when making a PATCH on a collection the entire updated
+  // collection should be returned
   patch<T>(path: string, body: PatchPayload<T>): Promise<RestResponse<GetModel<T>>>;
 
   delete<T>(path: string, body: DeletePayload<T>): Promise<void>;
