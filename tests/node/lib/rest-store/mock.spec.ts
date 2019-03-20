@@ -51,9 +51,10 @@ describe('RestStoreMock', () => {
 
   it('should spy on POST requests', async () => {
     const mock = new RestStoreMock<Bar>();
+    mock.post.withArgs({ foo: 1 }).returns(Promise.resolve());
 
     await mock.post({ foo: 1 });
 
-    expect(mock.post.calledWith({ foo: 1 })).to.be.true;
+    expect(mock.post).to.have.been.calledWith({ foo: 1 });
   });
 });

@@ -1,5 +1,5 @@
 import { StateContainer } from 'react-connect-state';
-import { spy } from 'sinon';
+import { stub } from 'sinon';
 import { IRestStore, RestStoreResponse, RestStoreState } from './rest-store';
 import { PostPayload } from './http-rest-client';
 
@@ -13,9 +13,11 @@ export default class RestStoreMock<T> extends StateContainer<RestStoreState<T>> 
       : { loading: false, response: mock };
   }
 
-  post = spy() as {
+  post = stub() as {
     (payload: PostPayload<T>): Promise<void>;
 
-    calledWith: (payload: PostPayload<T>) => boolean;
+    withArgs: (payload: PostPayload<T>) => {
+      returns: (response: Promise<void>) => void;
+    }
   };
 }
