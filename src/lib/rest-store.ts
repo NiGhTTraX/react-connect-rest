@@ -116,6 +116,8 @@ export default class RestStore<T> extends StateContainer<RestStoreState<T>> impl
         // in the next tick at the earliest meaning that we don't need
         // to check if it has toggled right after store creation.
         store.subscribe(state => {
+          // TODO: we don't have a test for the else branch
+          /* istanbul ignore else */
           if (!state.loading) {
             resolve();
           }
