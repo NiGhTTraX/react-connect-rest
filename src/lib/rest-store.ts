@@ -18,8 +18,12 @@ export type RestStoreResponse<T> = T extends Array<infer U>
   : T extends { id: any } ? ExpandedEntity<T> : never;
 
 export type RestStoreState<T> = {
-  loading: boolean;
+  loading: true
+  // TODO: loading can also mean refreshing so an existing response _might_ be present
   response?: RestStoreResponse<T>;
+} | {
+  loading: false;
+  response: RestStoreResponse<T>;
 };
 
 export interface IRestStore<T> extends IStateContainer<RestStoreState<T>> {
