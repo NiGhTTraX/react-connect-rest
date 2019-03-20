@@ -7,14 +7,21 @@
 
 ## Usage
 
-```tsx
+```typescript jsx
 import connectToRest, { IRestStore } from 'react-connect-rest';
+import React from 'react';
+import { render } from 'react-dom';
 
-interface MyViewProps {
-  container: IRestStore<number>;
+interface Foo {
+  id: number;
+  foo: string;
 }
 
-const MyView = ({ myData, foo }: MyViewProps) => <div>
+interface MyViewProps {
+  container: IRestStore<Foo>;
+}
+
+const MyView = ({ myData }: MyViewProps) => <div>
   {myData.state.loading ? 'Loading...' : <p>
     Here is the data from the API:
     {JSON.stringify(myData.state.response)}
@@ -23,11 +30,11 @@ const MyView = ({ myData, foo }: MyViewProps) => <div>
 
 // All 3 types need to be specified until
 // https://github.com/Microsoft/TypeScript/issues/10571 is implemented.
-const ConnectedView = connectToRest<MyViewProps, number, 'myData'>(
+const ConnectedView = connectToRest<MyViewProps, Foo, 'myData'>(
   MyView, '/my/api/', 'myData'
 );
 
-ReactDOM.render(<ConnectedView />);
+render(<ConnectedView />);
 ```
 
 
@@ -75,24 +82,32 @@ console.log(firstBooksAuthors.state.response[0].name);
 
 ## Connecting multiple views to the same API
 
-```tsx
+```typescript jsx
 import connectToRest, { RestStore, IRestStore } from 'react-connect-rest';
+import React from 'react';
+import { render } from 'react-dom';
 
-const container = new RestStore<number>('/my/api/');
 
-interface MyViewProps {
-  container: IRestStore<number>;
+interface Foo {
+  id: number;
+  foo: string;
 }
 
-const MyView1 = ({ container, foo }: MyViewProps) => null;
-const MyView2 = ({ container, foo }: MyViewProps) => null;
+interface MyViewProps {
+  container: IRestStore<Foo>;
+}
+
+const container = new RestStore<Foo>('/my/api/');
+
+const MyView1 = ({ container }: MyViewProps) => null;
+const MyView2 = ({ container }: MyViewProps) => null;
 
 // We'll have a single container querying the API and multiple
 // views listening to it.
-const ConnectedView1 = connectToRest(MyView, container, 'container');
-const ConnectedView2 = connectToRest(MyView, container, 'container');
+const ConnectedView1 = connectToRest(MyView1, container, 'container');
+const ConnectedView2 = connectToRest(MyView2, container, 'container');
 
-ReactDOM.render(<div>
+render(<div>
   <ConnectedView1 />
   <ConnectedView2 />
 </div>);
@@ -106,8 +121,13 @@ You can create stores with mocked data for use in tests:
 ```typescript jsx
 import { RestStoreMock } from 'react-connect-rest';
 
-const mock = new RestStoreMock<number[]>([1, 2, 3]);
+interface Foo {
+  id: number;
+  foo: string;
+}
+
+const mock = new RestStoreMock<Foo>({ id: 1, foo: 'bar' });
 
 console.log(mock.state.loading); // false
-console.log(mock.state.response); // [1, 2, 3]
+console.log(mock.state.response); // { id: 1, foo: 'bar' }
 ```
