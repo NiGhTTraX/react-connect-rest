@@ -51,7 +51,6 @@ describe('RestStore', () => {
         .verifiable();
 
       const store = new RestStore<Foo[]>(':api:', restClient.object);
-
       await new Promise(resolve => store.subscribe(resolve));
 
       expect(store.state.loading).to.be.false;
@@ -70,6 +69,7 @@ describe('RestStore', () => {
         .returns(() => Promise.resolve({ data: [] }));
 
       const store = new RestStore<Foo[]>(':api:', restClient.object);
+      await new Promise(resolve => store.subscribe(resolve));
 
       const getResponse: RestResponse<Foo[]> = {
         data: [
@@ -105,6 +105,7 @@ describe('RestStore', () => {
         }));
 
       const store = new RestStore<Foo[]>(':api:', restClient.object);
+      await new Promise(resolve => store.subscribe(resolve));
 
       restClient
         .setup(x => x.patch<Foo[]>(':api:', { id: 1, foo: 'baz' }))
