@@ -7,15 +7,15 @@ import HttpRestClient, {
   RestData
 } from './http-rest-client';
 
-type ExpandedEntity<T> = {
+export type StoreModel<T> = {
   [P in keyof T]: T[P] extends Array<infer U>
     ? U extends { id: any } ? IRestStore<U[]> : never
     : T[P] extends { id: any } ? IRestStore<T[P]> : T[P];
 };
 
 export type RestStoreResponse<T> = T extends Array<infer U>
-  ? U extends { id: any } ? ExpandedEntity<U>[] : never
-  : T extends { id: any } ? ExpandedEntity<T> : never;
+  ? U extends { id: any } ? StoreModel<U>[] : never
+  : T extends { id: any } ? StoreModel<T> : never;
 
 export type RestStoreState<T> = {
   loading: true
@@ -103,7 +103,7 @@ export default class RestStore<T> extends StateContainer<RestStoreState<T>> impl
     });
   }
 
-  private expandLinks = async (entity: RestData<T>): Promise<ExpandedEntity<T>> => {
+  private expandLinks = async (entity: RestData<T>): Promise<StoreModel<T>> => {
     const stores: Record<string, RestStore<any>> = entity.__links.reduce((acc, link) => ({
       ...acc,
       [link.rel]: new RestStore(
