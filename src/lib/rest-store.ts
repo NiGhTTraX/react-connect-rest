@@ -9,6 +9,7 @@ import HttpRestClient, {
 
 export type StoreModel<T> = {
   [P in keyof T]: T[P] extends Array<infer U>
+    // TODO: preserve U here if it's not a model
     ? U extends { id: any } ? IRestStore<U[]> : never
     : T[P] extends { id: any } ? IRestStore<T[P]> : T[P];
 };
