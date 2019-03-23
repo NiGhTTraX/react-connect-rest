@@ -1,7 +1,7 @@
 /* eslint-disable semi,no-unused-vars */
 import { Omit } from 'react-bind-component';
 
-type RestModel<T> = {
+export type RestModel<T> = {
   [P in keyof T]: T[P] extends Array<infer U>
     // Transform to many relations into lists of IDs
     ? U extends { id: infer X } ? X[] : U[]
@@ -46,8 +46,9 @@ export type PostPayload<T> = Omit<RestModel<GetModel<T>>, 'id'>;
 // If the PATCH is done on a collection then the entity needs to
 // be identified by its ID, otherwise it can be omitted.
 export type PatchPayload<T> = T extends Array<infer U>
-  ? U extends { id: any } ? Pick<U, 'id'> & Partial<Omit<U, 'id'>> : never
-  : T extends { id : any } ? Partial<T> : never;
+  // TODO: add tests for the RestModel transformation
+  ? U extends { id: any } ? Pick<U, 'id'> & Partial<Omit<RestModel<U>, 'id'>> : never
+  : T extends { id : any } ? Partial<RestModel<T>> : never;
 
 // If the DELETE is done on a collection then the entity needs to
 // be identified by its ID, otherwise the payload should be empty.
