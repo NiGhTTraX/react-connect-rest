@@ -22,7 +22,7 @@ export interface ArrayModel {
 
 export const postResponse: RestResponse<Post> = {
   data: {
-    __links: [{ rel: 'author', href: ':author-api:' }],
+    __links: { author: ':author-api:' },
     id: 1,
     author: 1
   }
@@ -30,7 +30,7 @@ export const postResponse: RestResponse<Post> = {
 
 export const postsResponse: RestResponse<Post[]> = {
   data: [{
-    __links: [{ rel: 'author', href: ':author-api:' }],
+    __links: { author: ':author-api:' },
     id: 1,
     author: 1
   }]
@@ -38,7 +38,7 @@ export const postsResponse: RestResponse<Post[]> = {
 
 export const bookResponse: RestResponse<Book> = {
   data: {
-    __links: [{ rel: 'authors', href: ':author-api:' }],
+    __links: { authors: ':author-api:' },
     id: 1,
     authors: [1]
   }
@@ -46,7 +46,7 @@ export const bookResponse: RestResponse<Book> = {
 
 export const booksResponse: RestResponse<Book[]> = {
   data: [{
-    __links: [{ rel: 'authors', href: ':author-api:' }],
+    __links: { authors: ':author-api:' },
     id: 1,
     authors: [1]
   }]

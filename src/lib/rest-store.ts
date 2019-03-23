@@ -104,13 +104,15 @@ export default class RestStore<T> extends StateContainer<RestStoreState<T>> impl
   }
 
   private expandLinks = async (entity: RestData<T>): Promise<StoreModel<T>> => {
-    const stores: Record<string, RestStore<any>> = entity.__links.reduce((acc, link) => ({
-      ...acc,
-      [link.rel]: new RestStore(
-        link.href,
-        this.restClient
-      )
-    }), {});
+    const stores: Record<string, RestStore<any>> = Object.entries(entity.__links)
+      .reduce((acc, [rel, href]) => ({
+        ...acc,
+        [rel]: new RestStore(
+          // @ts-ignore
+          href,
+          this.restClient
+        )
+      }), {});
 
     // Wait for all the stores to finish loading.
     await Promise.all(

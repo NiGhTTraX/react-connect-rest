@@ -26,13 +26,10 @@ type ToSingleRelations<T, U = GetModel<T>> = {
   [P in keyof U]: U[P] extends { id: any } ? P : never
 }[keyof U];
 
-export type HATEOASLink<T> = {
-  href: string;
-  rel: ToManyRelations<T> | ToSingleRelations<T>;
-};
-
 export type HATEOASMetadata<T> = {
-  __links: HATEOASLink<T>[];
+  __links: {
+    [P in ToManyRelations<T> | ToSingleRelations<T>]: string;
+  }
 };
 
 export type RestData<T> = HATEOASMetadata<T> & RestModel<T>;
