@@ -15,6 +15,11 @@ export interface Book {
   authors: Author[];
 }
 
+export interface ArrayModel {
+  id: number;
+  numbers: number[];
+}
+
 export const postResponse: RestResponse<Post> = {
   data: {
     __links: [{ rel: 'author', href: ':author-api:' }],

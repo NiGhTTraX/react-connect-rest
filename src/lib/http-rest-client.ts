@@ -4,7 +4,7 @@ import { Omit } from 'react-bind-component';
 type RestModel<T> = {
   [P in keyof T]: T[P] extends Array<infer U>
     // Transform to many relations into lists of IDs
-    ? U extends { id: infer X } ? X[] : never
+    ? U extends { id: infer X } ? X[] : U[]
     : T[P] extends { id: infer Y }
       // and to single relations into IDs
       ? Y

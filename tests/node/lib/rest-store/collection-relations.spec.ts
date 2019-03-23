@@ -3,6 +3,7 @@ import { describe, expect, it, wait } from '../../suite';
 import RestStore from '../../../../src/lib/rest-store';
 import HttpRestClient, { RestResponse } from '../../../../src/lib/http-rest-client';
 import {
+  ArrayModel,
   Author,
   authorResponse,
   authorsResponse,
@@ -28,6 +29,22 @@ describe('RestStore', () => {
 
       expect(authorStore.state.response).to.deep.equal([{ id: 1, name: 'author 1' }]);
     });
+
+    it('should leave arrays alone', async () => {
+      const restClient = Mock.ofType<HttpRestClient>();
+
+      restClient
+        .setup(x => x.get<ArrayModel[]>(':number-api:'))
+        .returns(() => Promise.resolve({ data: [{ __links: [], id: 1, numbers: [1, 2, 3] }] }))
+        .verifiable();
+
+      const store = new RestStore<ArrayModel[]>(':number-api:', restClient.object);
+
+      await new Promise(resolve => store.subscribe(resolve));
+
+      expect(store.state.response).to.deep.equal([{ id: 1, numbers: [1, 2, 3] }]);
+    });
+
 
     it('should transform a to many relation into a collection store', async () => {
       const restClient = Mock.ofType<HttpRestClient>();
