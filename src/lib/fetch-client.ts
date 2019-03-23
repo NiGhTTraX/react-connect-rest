@@ -6,21 +6,27 @@ import HttpRestClient, {
 } from './http-rest-client';
 
 export default class FetchClient implements HttpRestClient {
+  private readonly basePath: string;
+
+  constructor(basePath: string = '') {
+    this.basePath = basePath;
+  }
+
   get<T>(path: string) {
-    return fetch(path)
+    return fetch(this.getPath(path))
       .then(resp => resp.json() as unknown as RestResponse<T>);
   }
 
   post<T>(path: string, body: PostPayload<T>) {
-    return this.doFetchWithBody<RestResponse<GetModel<T>>>(path, body, 'POST');
+    return this.doFetchWithBody<RestResponse<GetModel<T>>>(this.getPath(path), body, 'POST');
   }
 
   patch<T>(path: string, body: PatchPayload<T>) {
-    return this.doFetchWithBody<RestResponse<GetModel<T>>>(path, body, 'PATCH');
+    return this.doFetchWithBody<RestResponse<GetModel<T>>>(this.getPath(path), body, 'PATCH');
   }
 
   async delete<T>(path: string, body?: DeletePayload<T>): Promise<void> {
-    await this.doFetchWithBody(path, body, 'DELETE');
+    await this.doFetchWithBody(this.getPath(path), body, 'DELETE');
   }
 
   private doFetchWithBody<R>(path: string, body: any, method: string) {
@@ -32,5 +38,9 @@ export default class FetchClient implements HttpRestClient {
       },
       body: JSON.stringify(body)
     }).then(resp => resp.json() as unknown as R);
+  }
+
+  private getPath(path: string) {
+    return this.basePath + path;
   }
 }
