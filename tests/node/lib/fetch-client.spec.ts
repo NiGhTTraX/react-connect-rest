@@ -6,7 +6,7 @@ describe('FetchClient', () => {
   it('should make a GET request', async () => {
     fetchMock.get('/api/', true);
 
-    expect(await FetchClient.get<boolean>('/api/')).to.be.true;
+    expect(await new FetchClient().get<boolean>('/api/')).to.be.true;
   });
 
   it('should make a POST request', async () => {
@@ -24,7 +24,7 @@ describe('FetchClient', () => {
       }
     );
 
-    expect(await FetchClient.post<T>('/api/', { foo: 'bar' })).to.deep.equal(response);
+    expect(await new FetchClient().post<T>('/api/', { foo: 'bar' })).to.deep.equal(response);
   });
 
   it('should make a PATCH request for a collection', async () => {
@@ -42,7 +42,7 @@ describe('FetchClient', () => {
       }
     );
 
-    expect(await FetchClient.patch<T[]>('/api/', { id: 1, foo: 'bar' })).to.deep.equal(response);
+    expect(await new FetchClient().patch<T[]>('/api/', { id: 1, foo: 'bar' })).to.deep.equal(response);
   });
 
   it('should make a PATCH request for an entity', async () => {
@@ -60,7 +60,7 @@ describe('FetchClient', () => {
       }
     );
 
-    expect(await FetchClient.patch<T>('/api/', { foo: 'bar' })).to.deep.equal(response);
+    expect(await new FetchClient().patch<T>('/api/', { foo: 'bar' })).to.deep.equal(response);
   });
 
   it('should make a DELETE request on a collection', async () => {
@@ -78,7 +78,7 @@ describe('FetchClient', () => {
       }
     );
 
-    expect(await FetchClient.delete<T[]>('/api/', { id: 1 })).to.be.undefined;
+    expect(await new FetchClient().delete<T[]>('/api/', { id: 1 })).to.be.undefined;
   });
 
   it('should make a DELETE request on an entity', async () => {
@@ -95,6 +95,6 @@ describe('FetchClient', () => {
       }
     );
 
-    expect(await FetchClient.delete<T>('/api/')).to.be.undefined;
+    expect(await new FetchClient().delete<T>('/api/')).to.be.undefined;
   });
 });

@@ -26,7 +26,7 @@ export default function connectToRest<
     return {
       ...acc,
       [key]: typeof containerOrApi === 'string'
-        ? new RestStore(containerOrApi, FetchClient)
+        ? new RestStore(containerOrApi, new FetchClient())
         : containerOrApi
     };
   }, {}));
