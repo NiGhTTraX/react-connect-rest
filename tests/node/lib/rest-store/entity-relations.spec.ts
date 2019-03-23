@@ -2,56 +2,18 @@ import { Mock, Times } from 'typemoq';
 import { describe, expect, it, wait } from '../../suite';
 import RestStore from '../../../../src/lib/rest-store';
 import HttpRestClient, { RestResponse } from '../../../../src/lib/http-rest-client';
+import {
+  Author,
+  authorResponse,
+  authorsResponse,
+  Book,
+  bookResponse,
+  Post,
+  postResponse
+} from './fixture';
 
 describe('RestStore', () => {
   describe('entity relations', () => {
-    interface Author {
-      id: number;
-      name: string;
-    }
-
-    interface Post {
-      id: number;
-      author: Author;
-    }
-
-    interface Book {
-      id: number;
-      authors: Author[];
-    }
-
-    const postResponse: RestResponse<Post> = {
-      data: {
-        __links: [{ rel: 'author', href: ':author-api:' }],
-        id: 1,
-        author: 1
-      }
-    };
-
-    const bookResponse: RestResponse<Book> = {
-      data: {
-        __links: [{ rel: 'authors', href: ':author-api:' }],
-        id: 1,
-        authors: [1]
-      }
-    };
-
-    const authorsResponse: RestResponse<Author[]> = {
-      data: [{
-        __links: [],
-        id: 1,
-        name: 'author 1'
-      }]
-    };
-
-    const authorResponse: RestResponse<Author> = {
-      data: {
-        __links: [],
-        id: 1,
-        name: 'author 1'
-      }
-    };
-
     it('should leave primitives alone', async () => {
       const restClient = Mock.ofType<HttpRestClient>();
 

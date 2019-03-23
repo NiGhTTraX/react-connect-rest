@@ -2,23 +2,19 @@ import { describe, expect, it } from '../../suite';
 import { It, Mock, Times } from 'typemoq';
 import HttpRestClient, { RestResponse } from '../../../../src/lib/http-rest-client';
 import RestStore from '../../../../src/lib/rest-store';
+import { Author } from './fixture';
 
 describe('RestStore', () => {
   describe('collection requests', () => {
-    interface Foo {
-      id: number;
-      foo: string;
-    }
-
     it('should make a GET request when created', () => {
       const restClient = Mock.ofType<HttpRestClient>();
       restClient
-        .setup(x => x.get<Foo[]>(':api:'))
+        .setup(x => x.get<Author[]>(':api:'))
         .returns(() => new Promise(() => {}))
         .verifiable(Times.once());
 
       // eslint-disable-next-line no-new
-      new RestStore<Foo[]>(':api:', restClient.object);
+      new RestStore<Author[]>(':api:', restClient.object);
 
       restClient.verifyAll();
     });
@@ -26,37 +22,37 @@ describe('RestStore', () => {
     it('should have an initial state', () => {
       const restClient = Mock.ofType<HttpRestClient>();
       restClient
-        .setup(x => x.get<Foo[]>(It.isAny()))
+        .setup(x => x.get<Author[]>(It.isAny()))
         .returns(() => new Promise(() => {}))
         .verifiable();
 
-      const store = new RestStore<Foo[]>(':irrelevant:', restClient.object);
+      const store = new RestStore<Author[]>(':irrelevant:', restClient.object);
 
       expect(store.state.loading).to.be.true;
       expect(store.state.response).to.be.undefined;
     });
 
     it('should store the GET response', async () => {
-      const response: RestResponse<Foo[]> = {
+      const response: RestResponse<Author[]> = {
         data: [
-          { __links: [], id: 1, foo: 'bar' },
-          { __links: [], id: 2, foo: 'baz' }
+          { __links: [], id: 1, name: 'bar' },
+          { __links: [], id: 2, name: 'baz' }
         ]
       };
 
       const restClient = Mock.ofType<HttpRestClient>();
       restClient
-        .setup(x => x.get<Foo[]>(':api:'))
+        .setup(x => x.get<Author[]>(':api:'))
         .returns(() => Promise.resolve(response))
         .verifiable();
 
-      const store = new RestStore<Foo[]>(':api:', restClient.object);
+      const store = new RestStore<Author[]>(':api:', restClient.object);
       await new Promise(resolve => store.subscribe(resolve));
 
       expect(store.state.loading).to.be.false;
       expect(store.state.response).to.deep.equal([
-        { id: 1, foo: 'bar' },
-        { id: 2, foo: 'baz' }
+        { id: 1, name: 'bar' },
+        { id: 2, name: 'baz' }
       ]);
 
       restClient.verifyAll();
@@ -65,31 +61,31 @@ describe('RestStore', () => {
     it('should make a POST request', async () => {
       const restClient = Mock.ofType<HttpRestClient>();
       restClient
-        .setup(x => x.get<Foo[]>(':api:'))
+        .setup(x => x.get<Author[]>(':api:'))
         .returns(() => Promise.resolve({ data: [] }));
 
-      const store = new RestStore<Foo[]>(':api:', restClient.object);
+      const store = new RestStore<Author[]>(':api:', restClient.object);
       await new Promise(resolve => store.subscribe(resolve));
 
-      const getResponse: RestResponse<Foo[]> = {
+      const getResponse: RestResponse<Author[]> = {
         data: [
-          { __links: [], id: 1, foo: 'bar' }
+          { __links: [], id: 1, name: 'bar' }
         ]
       };
 
       restClient
-        .setup(x => x.post<Foo[]>(':api:', { foo: 'bar' }))
-        .returns(() => Promise.resolve({ data: { __links: [], id: 1, foo: 'bar' } }))
+        .setup(x => x.post<Author[]>(':api:', { name: 'bar' }))
+        .returns(() => Promise.resolve({ data: { __links: [], id: 1, name: 'bar' } }))
         .verifiable();
 
       restClient
-        .setup(x => x.get<Foo[]>(':api:'))
+        .setup(x => x.get<Author[]>(':api:'))
         .returns(() => Promise.resolve(getResponse));
 
-      await store.post({ foo: 'bar' });
+      await store.post({ name: 'bar' });
 
       expect(store.state.loading).to.be.false;
-      expect(store.state.response).to.deep.equal([{ id: 1, foo: 'bar' }]);
+      expect(store.state.response).to.deep.equal([{ id: 1, name: 'bar' }]);
 
       restClient.verifyAll();
     });
@@ -97,33 +93,33 @@ describe('RestStore', () => {
     it('should make a PATCH request', async () => {
       const restClient = Mock.ofType<HttpRestClient>();
       restClient
-        .setup(x => x.get<Foo[]>(':api:'))
+        .setup(x => x.get<Author[]>(':api:'))
         .returns(() => Promise.resolve({
           data: [
-            { __links: [], id: 1, foo: 'bar' }
+            { __links: [], id: 1, name: 'bar' }
           ]
         }));
 
-      const store = new RestStore<Foo[]>(':api:', restClient.object);
+      const store = new RestStore<Author[]>(':api:', restClient.object);
       await new Promise(resolve => store.subscribe(resolve));
 
       restClient
-        .setup(x => x.patch<Foo[]>(':api:', { id: 1, foo: 'baz' }))
-        .returns(() => Promise.resolve({ data: { __links: [], id: 1, foo: 'baz' } }))
+        .setup(x => x.patch<Author[]>(':api:', { id: 1, name: 'baz' }))
+        .returns(() => Promise.resolve({ data: { __links: [], id: 1, name: 'baz' } }))
         .verifiable();
 
       restClient
-        .setup(x => x.get<Foo[]>(':api:'))
+        .setup(x => x.get<Author[]>(':api:'))
         .returns(() => Promise.resolve({
           data: [{
-            __links: [], id: 1, foo: 'baz'
+            __links: [], id: 1, name: 'baz'
           }]
         }));
 
-      await store.patch({ id: 1, foo: 'baz' });
+      await store.patch({ id: 1, name: 'baz' });
 
       expect(store.state.loading).to.be.false;
-      expect(store.state.response).to.deep.equal([{ id: 1, foo: 'baz' }]);
+      expect(store.state.response).to.deep.equal([{ id: 1, name: 'baz' }]);
 
       restClient.verifyAll();
     });
@@ -131,23 +127,23 @@ describe('RestStore', () => {
     it('should make a DELETE request', async () => {
       const restClient = Mock.ofType<HttpRestClient>();
       restClient
-        .setup(x => x.get<Foo[]>(':api:'))
+        .setup(x => x.get<Author[]>(':api:'))
         .returns(() => Promise.resolve({
           data: [
-            { __links: [], id: 1, foo: 'bar' }
+            { __links: [], id: 1, name: 'bar' }
           ]
         }));
 
-      const store = new RestStore<Foo[]>(':api:', restClient.object);
+      const store = new RestStore<Author[]>(':api:', restClient.object);
       await new Promise(resolve => store.subscribe(resolve));
 
       restClient
-        .setup(x => x.delete<Foo[]>(':api:', { id: 1 }))
+        .setup(x => x.delete<Author[]>(':api:', { id: 1 }))
         .returns(() => Promise.resolve())
         .verifiable();
 
       restClient
-        .setup(x => x.get<Foo[]>(':api:'))
+        .setup(x => x.get<Author[]>(':api:'))
         .returns(() => Promise.resolve({
           data: []
         }));
