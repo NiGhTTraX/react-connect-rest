@@ -3,12 +3,17 @@ import { Omit } from 'react-bind-component';
 
 export type RestModel<T> = {
   [P in keyof T]: T[P] extends Array<infer U>
-    // Transform to many relations into lists of IDs
-    ? U extends { id: infer X } ? X[] : U[]
+    ? U extends { id: infer X }
+      // Transform to many relations into lists of IDs
+      // or into expanded models.
+      ? (X[] | U[])
+      // Leave non model arrays alone.
+      : U[]
     : T[P] extends { id: infer Y }
-      // and to single relations into IDs
-      ? Y
-      // and leave everything else untouched.
+      // Transform to single relations into IDs
+      // or into an expanded model
+      ? (Y | T[P])
+      // Leave everything else untouched.
       : T[P];
 };
 
@@ -26,9 +31,11 @@ type ToSingleRelations<T, U = GetModel<T>> = {
   [P in keyof U]: U[P] extends { id: any } ? P : never
 }[keyof U];
 
+export type HATEOASLink<T> = ToManyRelations<T> | ToSingleRelations<T>;
+
 export type HATEOASMetadata<T> = {
   __links: {
-    [P in ToManyRelations<T> | ToSingleRelations<T>]: string;
+    [P in HATEOASLink<T>]: string;
   }
 };
 

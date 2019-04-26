@@ -1,7 +1,7 @@
 import { IStateContainer, StateContainer } from 'react-connect-state';
 // eslint-disable-next-line no-unused-vars
 import HttpRestClient, {
-  DeletePayload,
+  DeletePayload, HATEOASLink,
   PatchPayload,
   PostPayload,
   RestData
@@ -104,7 +104,14 @@ export default class RestStore<T> extends StateContainer<RestStoreState<T>> impl
   }
 
   private expandLinks = async (entity: RestData<T>): Promise<StoreModel<T>> => {
-    const stores: Record<string, RestStore<any>> = Object.entries(entity.__links)
+    const linksToExpand = Object.entries(entity.__links)
+      .filter(([link]) => !this.isLinkExpanded(
+        entity,
+        // @ts-ignore
+        link
+      ));
+
+    const stores: Record<string, RestStore<any>> = linksToExpand
       .reduce((acc, [rel, href]) => ({
         ...acc,
         [rel]: new RestStore(
@@ -141,4 +148,14 @@ export default class RestStore<T> extends StateContainer<RestStoreState<T>> impl
     // @ts-ignore
     return result;
   };
+
+  // eslint-disable-next-line class-methods-use-this
+  private isLinkExpanded(entity: RestData<T>, link: HATEOASLink<T>) {
+    // @ts-ignore
+    const value = entity[link];
+
+    return Array.isArray(value)
+      ? value.length && typeof value[0] === 'object'
+      : typeof value === 'object';
+  }
 }

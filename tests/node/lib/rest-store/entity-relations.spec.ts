@@ -45,6 +45,66 @@ describe('RestStore', () => {
       expect(store.state.response).to.deep.equal({ id: 1, numbers: [1, 2, 3] });
     });
 
+    it('should leave expanded to many relations alone', async () => {
+      const restClient = Mock.ofType<HttpRestClient>();
+
+      restClient
+        .setup(x => x.get<Book>(':book-api:'))
+        .returns(() => Promise.resolve({
+          data: {
+            __links: { authors: ':authors-api:' },
+            id: 1,
+            authors: [{
+              id: 1,
+              name: 'author 1'
+            }]
+          }
+        }))
+        .verifiable();
+
+      const store = new RestStore<Book>(':book-api:', restClient.object);
+
+      await new Promise(resolve => store.subscribe(resolve));
+
+      expect(store.state.response).to.deep.equal({
+        id: 1,
+        authors: [{
+          id: 1,
+          name: 'author 1'
+        }]
+      });
+    });
+
+    it('should leave expanded to single relations alone', async () => {
+      const restClient = Mock.ofType<HttpRestClient>();
+
+      restClient
+        .setup(x => x.get<Post>(':post-api:'))
+        .returns(() => Promise.resolve({
+          data: {
+            __links: { author: ':authors-api:' },
+            id: 1,
+            author: {
+              id: 1,
+              name: 'author 1'
+            }
+          }
+        }))
+        .verifiable();
+
+      const store = new RestStore<Post>(':post-api:', restClient.object);
+
+      await new Promise(resolve => store.subscribe(resolve));
+
+      expect(store.state.response).to.deep.equal({
+        id: 1,
+        author: {
+          id: 1,
+          name: 'author 1'
+        }
+      });
+    });
+
     it('should transform a to many relation into a collection store', async () => {
       const restClient = Mock.ofType<HttpRestClient>();
 
