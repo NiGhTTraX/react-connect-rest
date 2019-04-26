@@ -4,7 +4,7 @@ import HttpRestClient, {
   DeletePayload, HATEOASLink,
   PatchPayload,
   PostPayload,
-  RestData
+  RestData, RestResponse
 } from './http-rest-client';
 
 export type StoreModel<T> = {
@@ -41,7 +41,7 @@ export default class RestStore<T> extends StateContainer<RestStoreState<T>> impl
 
   private readonly api: string;
 
-  constructor(api: string, restClient: HttpRestClient) {
+  constructor(api: string, restClient: HttpRestClient, existingResponse?: RestResponse<T>['data']) {
     super();
     this.api = api;
     this.restClient = restClient;
@@ -50,7 +50,18 @@ export default class RestStore<T> extends StateContainer<RestStoreState<T>> impl
       loading: true
     };
 
-    this.fetchData();
+    if (existingResponse) {
+      // Best case the response is expanded synchronously but we can't
+      // know that so we always await it.
+      this.expandResponse({ data: existingResponse }).then(expandedResponse => {
+        this.setState({
+          loading: false,
+          response: expandedResponse
+        });
+      });
+    } else {
+      this.fetchData();
+    }
   }
 
   post = async (payload: PostPayload<T>) => {
@@ -86,7 +97,16 @@ export default class RestStore<T> extends StateContainer<RestStoreState<T>> impl
 
   private async fetchData() {
     const response = await this.restClient.get<T>(this.api);
+    const expandedResponse = await this.expandResponse(response);
 
+    this.setState({
+      loading: false,
+      // @ts-ignore
+      response: expandedResponse
+    });
+  }
+
+  private async expandResponse(response: RestResponse<T>): Promise<RestStoreResponse<T>> {
     let expandedResponse;
 
     if (Array.isArray(response.data)) {
@@ -96,16 +116,19 @@ export default class RestStore<T> extends StateContainer<RestStoreState<T>> impl
       expandedResponse = await this.expandLinks(response.data);
     }
 
-    this.setState({
-      loading: false,
-      // @ts-ignore
-      response: expandedResponse
-    });
+    return expandedResponse;
   }
 
   private expandLinks = async (entity: RestData<T>): Promise<StoreModel<T>> => {
     const linksToExpand = Object.entries(entity.__links)
       .filter(([link]) => !this.isLinkExpanded(
+        entity,
+        // @ts-ignore
+        link
+      ));
+
+    const expandedLinks = Object.entries(entity.__links)
+      .filter(([link]) => this.isLinkExpanded(
         entity,
         // @ts-ignore
         link
@@ -118,6 +141,18 @@ export default class RestStore<T> extends StateContainer<RestStoreState<T>> impl
           // @ts-ignore
           href,
           this.restClient
+        )
+      }), {});
+
+    const expandedStores: Record<string, RestStore<any>> = expandedLinks
+      .reduce((acc, [rel, href]) => ({
+        ...acc,
+        [rel]: new RestStore(
+          // @ts-ignore
+          href,
+          this.restClient,
+          // @ts-ignore
+          entity[rel]
         )
       }), {});
 
@@ -140,7 +175,8 @@ export default class RestStore<T> extends StateContainer<RestStoreState<T>> impl
 
     const result = {
       ...entity,
-      ...stores
+      ...stores,
+      ...expandedStores
     };
 
     delete result.__links;

@@ -6,13 +6,13 @@ export type RestModel<T> = {
     ? U extends { id: infer X }
       // Transform to many relations into lists of IDs
       // or into expanded models.
-      ? (X[] | U[])
+      ? (X[] | RestData<U>[])
       // Leave non model arrays alone.
       : U[]
     : T[P] extends { id: infer Y }
       // Transform to single relations into IDs
       // or into an expanded model
-      ? (Y | T[P])
+      ? (Y | RestData<T[P]>)
       // Leave everything else untouched.
       : T[P];
 };
