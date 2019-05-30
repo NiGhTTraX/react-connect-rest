@@ -72,7 +72,7 @@
     "babel-plugin-istanbul": "~5.1.0",
     "chai": "~4.2.0",
     "codecov": "~3.5.0",
-    "dom-testing-library": "~4.1.0",
+    "dom-testing-library": "~5.0.0",
     "eslint": "~5.16.0",
     "eslint-plugin-react": "~7.13.0",
     "fetch-mock": "~7.3.0",
