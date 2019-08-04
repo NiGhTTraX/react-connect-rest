@@ -43,7 +43,7 @@
   "license": "MIT",
   "dependencies": {
     "react-connect-state": "~4.0.0",
-    "sinon": "~7.3.0"
+    "sinon": "~7.4.0"
   },
   "peerDependencies": {
     "react": "^16"
