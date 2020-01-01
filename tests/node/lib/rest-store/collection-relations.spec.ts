@@ -1,7 +1,9 @@
-import { Mock, Times } from 'typemoq';
-import { describe, expect, it, wait } from '../../suite';
-import RestStore from '../../../../src/lib/rest-store';
+import { wait } from '@tdd-buffet/react';
+import Mock from 'strong-mock';
+import { expect } from 'tdd-buffet/expect/chai';
+import { describe, it } from 'tdd-buffet/suite/node';
 import HttpRestClient, { RestResponse } from '../../../../src/lib/http-rest-client';
+import RestStore from '../../../../src/lib/rest-store';
 import {
   ArrayModel,
   Author,
@@ -16,14 +18,13 @@ import {
 describe('RestStore', () => {
   describe('collection relations', () => {
     it('should leave primitives alone', async () => {
-      const restClient = Mock.ofType<HttpRestClient>();
+      const restClient = new Mock<HttpRestClient>();
 
       restClient
-        .setup(x => x.get<Author[]>(':author-api:'))
-        .returns(() => Promise.resolve(authorsResponse))
-        .verifiable();
+        .when(x => x.get<Author[]>(':author-api:'))
+        .returns(Promise.resolve(authorsResponse));
 
-      const authorStore = new RestStore<Author[]>(':author-api:', restClient.object);
+      const authorStore = new RestStore<Author[]>(':author-api:', restClient.stub);
 
       await new Promise(resolve => authorStore.subscribe(resolve));
 
@@ -31,14 +32,13 @@ describe('RestStore', () => {
     });
 
     it('should leave arrays alone', async () => {
-      const restClient = Mock.ofType<HttpRestClient>();
+      const restClient = new Mock<HttpRestClient>();
 
       restClient
-        .setup(x => x.get<ArrayModel[]>(':number-api:'))
-        .returns(() => Promise.resolve({ data: [{ __links: [], id: 1, numbers: [1, 2, 3] }] }))
-        .verifiable();
+        .when(x => x.get<ArrayModel[]>(':number-api:'))
+        .returns(Promise.resolve({ data: [{ __links: [], id: 1, numbers: [1, 2, 3] }] }));
 
-      const store = new RestStore<ArrayModel[]>(':number-api:', restClient.object);
+      const store = new RestStore<ArrayModel[]>(':number-api:', restClient.stub);
 
       await new Promise(resolve => store.subscribe(resolve));
 
@@ -47,19 +47,17 @@ describe('RestStore', () => {
 
 
     it('should transform a to many relation into a collection store', async () => {
-      const restClient = Mock.ofType<HttpRestClient>();
+      const restClient = new Mock<HttpRestClient>();
 
       restClient
-        .setup(x => x.get<Book[]>(':book-api:'))
-        .returns(() => Promise.resolve(booksResponse))
-        .verifiable();
+        .when(x => x.get<Book[]>(':book-api:'))
+        .returns(Promise.resolve(booksResponse));
 
       restClient
-        .setup(x => x.get<Author[]>(':author-api:'))
-        .returns(() => Promise.resolve(authorsResponse))
-        .verifiable();
+        .when(x => x.get<Author[]>(':author-api:'))
+        .returns(Promise.resolve(authorsResponse));
 
-      const bookStore = new RestStore<Book[]>(':book-api:', restClient.object);
+      const bookStore = new RestStore<Book[]>(':book-api:', restClient.stub);
 
       await new Promise(resolve => bookStore.subscribe(resolve));
 
@@ -77,19 +75,17 @@ describe('RestStore', () => {
     });
 
     it('should transform a to single relation into an entity store', async () => {
-      const restClient = Mock.ofType<HttpRestClient>();
+      const restClient = new Mock<HttpRestClient>();
 
       restClient
-        .setup(x => x.get<Post[]>(':post-api:'))
-        .returns(() => Promise.resolve(postsResponse))
-        .verifiable();
+        .when(x => x.get<Post[]>(':post-api:'))
+        .returns(Promise.resolve(postsResponse));
 
       restClient
-        .setup(x => x.get<Author>(':author-api:'))
-        .returns(() => Promise.resolve(authorResponse))
-        .verifiable();
+        .when(x => x.get<Author>(':author-api:'))
+        .returns(Promise.resolve(authorResponse));
 
-      const postStore = new RestStore<Post[]>(':post-api:', restClient.object);
+      const postStore = new RestStore<Post[]>(':post-api:', restClient.stub);
 
       await new Promise(resolve => postStore.subscribe(resolve));
 
@@ -107,24 +103,22 @@ describe('RestStore', () => {
     });
 
     it('should wait for all child stores', async () => {
-      const restClient = Mock.ofType<HttpRestClient>();
+      const restClient = new Mock<HttpRestClient>();
 
       restClient
-        .setup(x => x.get<Post[]>(':post-api:'))
-        .returns(() => Promise.resolve(postsResponse))
-        .verifiable();
+        .when(x => x.get<Post[]>(':post-api:'))
+        .returns(Promise.resolve(postsResponse));
 
       let resolveAuthor: (r: RestResponse<Author>) => void = () => {};
 
       restClient
-        .setup(x => x.get<Author>(':author-api:'))
-        .returns(() => new Promise(resolve => { resolveAuthor = resolve; }))
-        .verifiable();
+        .when(x => x.get<Author>(':author-api:'))
+        .returns(new Promise(resolve => { resolveAuthor = resolve; }));
 
-      const postStore = new RestStore<Post[]>(':post-api:', restClient.object);
+      const postStore = new RestStore<Post[]>(':post-api:', restClient.stub);
 
       // Wait until the post response is fetched.
-      await wait(() => restClient.verify(x => x.get(':post-api:'), Times.once()));
+      await wait(() => restClient.verifyAll());
 
       expect(postStore.state.loading).to.be.true;
 

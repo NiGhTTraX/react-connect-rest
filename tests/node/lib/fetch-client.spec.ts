@@ -1,6 +1,8 @@
+import { describe, it } from 'tdd-buffet/suite/node';
+import { expect } from 'tdd-buffet/expect/chai';
 import fetchMock from 'fetch-mock';
-import { describe, expect, it } from '../suite';
 import FetchClient from '../../../src/lib/fetch-client';
+
 
 describe('FetchClient', () => {
   it('should make a GET request', async () => {

@@ -1,11 +1,13 @@
+import { $render, wait } from '@tdd-buffet/react';
+import fetchMock from 'fetch-mock';
 import React from 'react';
 import createReactMock from 'react-mock-component';
-import fetchMock from 'fetch-mock';
-import { Mock } from 'typemoq';
-import { $render, afterEach, beforeEach, describe, expect, it, wait } from './suite';
+import { expect } from 'tdd-buffet/expect/chai';
+import { afterEach, beforeEach, describe, it } from 'tdd-buffet/suite/node';
 import connectToRest from '../../src/connect';
-import { IRestStore } from '../../src/lib/rest-store';
 import { RestResponse } from '../../src/lib/http-rest-client';
+import { IRestStore } from '../../src/lib/rest-store';
+import RestStoreMock from '../../src/lib/rest-store-mock';
 
 describe('connectToRest', () => {
   interface Foo {
@@ -42,17 +44,17 @@ describe('connectToRest', () => {
 
     await wait(() => expect(View.lastProps.container.state).to.deep.equal({
       loading: false,
-      response
+      response: [{ id: 1 }, { id: 2 }]
     }));
   });
 
   it('should connect the view to the given state container', async () => {
     const View = createReactMock<ViewProps>();
-    const container = Mock.ofType<IRestStore<Foo>>();
-    const ConnectedView = connectToRest(View, { container: container.object });
+    const container = new RestStoreMock();
+    const ConnectedView = connectToRest(View, { container });
 
     $render(<ConnectedView />);
 
-    await wait(() => expect(View.renderedWith({ container: container.object })).to.be.true);
+    await wait(() => expect(View.renderedWith({ container })).to.be.true);
   });
 });
