@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 import { IStateContainer, StateContainer } from 'react-connect-state';
 // eslint-disable-next-line no-unused-vars
 import HttpRestClient, {
