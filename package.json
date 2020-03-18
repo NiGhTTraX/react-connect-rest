@@ -63,7 +63,7 @@
     "node-fetch": "~2.6.0",
     "react": "~16.13.0",
     "react-dom": "~16.13.0",
-    "react-mock-component": "~2.2.0",
+    "react-mock-component": "~2.3.0",
     "strong-mock": "~3.2.4",
     "tdd-buffet": "~0.15.4",
     "typescript": "~3.8.0"
