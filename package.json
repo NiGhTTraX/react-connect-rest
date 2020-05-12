@@ -66,6 +66,6 @@
     "react-mock-component": "~2.3.0",
     "strong-mock": "~3.2.4",
     "tdd-buffet": "~0.16.0",
-    "typescript": "~3.8.0"
+    "typescript": "~3.9.0"
   }
 }
