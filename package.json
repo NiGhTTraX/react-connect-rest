@@ -47,7 +47,7 @@
     "react": "^16"
   },
   "devDependencies": {
-    "@nighttrax/eslint-config-tsx": "~3.0.0",
+    "@nighttrax/eslint-config-tsx": "~6.2.0",
     "@tdd-buffet/react": "~0.8.1",
     "@types/fetch-mock": "~7.3.0",
     "@types/node-fetch": "~2.5.0",
